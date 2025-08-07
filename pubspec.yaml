@@ -27,3 +27,6 @@ flutter:
     - assets/singapur.jpg
     - assets/sydney.jpg
     - assets/notifications_header.jpg
+    - assets/avatar.png
+    - assets/warning.png
+    - assets/about.png

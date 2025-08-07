@@ -5,6 +5,7 @@ void showSeatRequestDialog(BuildContext context, Map<String, String> result) {
     context: context,
     builder: (BuildContext context) {
       return Dialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -38,7 +39,7 @@ void showSeatRequestDialog(BuildContext context, Map<String, String> result) {
                 children: [
                   const CircleAvatar(
                     radius: 24,
-                    backgroundImage: AssetImage('assets/profile.jpg'),
+                    backgroundImage: AssetImage('assets/avatar.png'),
                   ),
                   const SizedBox(width: 12),
                   Column(

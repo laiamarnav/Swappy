@@ -39,7 +39,38 @@ class _SearchScreenState extends State<SearchScreen> {
       'date': '2025-11-30',
       'time': '12:20'
     },
-    // Puedes añadir más si deseas...
+    {
+      'airline': 'Vueling',
+      'from': 'Barcelona',
+      'to': 'Rome',
+      'seat': '9C',
+      'date': '2025-11-30',
+      'time': '12:20'
+    },
+        {
+      'airline': 'Air France',
+      'from': 'Barcelona',
+      'to': 'Paris',
+      'seat': '12A',
+      'date': '2025-11-30',
+      'time': '10:15'
+    },
+    {
+      'airline': 'Vueling',
+      'from': 'Barcelona',
+      'to': 'Rome',
+      'seat': '9C',
+      'date': '2025-11-30',
+      'time': '12:20'
+    },
+    {
+      'airline': 'Vueling',
+      'from': 'Barcelona',
+      'to': 'Rome',
+      'seat': '9C',
+      'date': '2025-11-30',
+      'time': '12:20'
+    },
   ];
 
   void _navigateCreate() {

@@ -123,12 +123,20 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      // Volvemos al AppBar clásico que te gustaba
+      // AppBar blanco con iconos y texto grises
       appBar: AppBar(
-        title: const Text("Publicar asiento"),
-        backgroundColor: const Color(0xFF5078F2),
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.grey,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          "Publicar asiento",
+          style: TextStyle(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.w200),
+        ),
       ),
 
       body: SingleChildScrollView(
