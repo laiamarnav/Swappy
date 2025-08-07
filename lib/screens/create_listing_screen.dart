@@ -128,11 +128,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.grey,
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         title: const Text(
           "Publicar asiento",
           style: TextStyle(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.w200),

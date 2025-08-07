@@ -19,11 +19,7 @@ class ProfileScreen extends StatelessWidget {
               backgroundColor: Colors.white,
               elevation: 0,
               centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                color: Colors.grey,
-                onPressed: () => Navigator.of(context).pop(),
-              ),
+          
               title: const Text(
                 'Perfil',
                 style: TextStyle(
@@ -148,7 +144,6 @@ class _OptionTile extends StatelessWidget {
         child: Icon(icon, color: Colors.blue),
       ),
       title: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
-      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       horizontalTitleGap: 16,
