@@ -60,25 +60,19 @@ class ScaleFadePageRoute<T> extends PageRouteBuilder<T> {
           },
         );
 }
+  class FadeTransitionsBuilder extends PageTransitionsBuilder {
+    const FadeTransitionsBuilder();
 
-/// Builder used for the global [pageTransitionsTheme]
-class SlideRightTransitionsBuilder extends PageTransitionsBuilder {
-  const SlideRightTransitionsBuilder();
-
-  @override
-  Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    final curved = CurvedAnimation(parent: animation, curve: Curves.easeOut);
-    return SlideTransition(
-      position:
-          Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero)
-              .animate(curved),
-      child: child,
-    );
+    @override
+    Widget buildTransitions<T>(
+      PageRoute<T> route,
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child,
+    ) {
+      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOut);
+      return FadeTransition(opacity: curved, child: child);
+    }
   }
-}
+

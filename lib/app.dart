@@ -15,12 +15,12 @@ class MyApp extends StatelessWidget {
         // Updated to use our custom slide transition globally
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
-            TargetPlatform.android: SlideRightTransitionsBuilder(),
-            TargetPlatform.iOS: SlideRightTransitionsBuilder(),
-            TargetPlatform.macOS: SlideRightTransitionsBuilder(),
-            TargetPlatform.linux: SlideRightTransitionsBuilder(),
-            TargetPlatform.windows: SlideRightTransitionsBuilder(),
-            TargetPlatform.fuchsia: SlideRightTransitionsBuilder(),
+            TargetPlatform.android: FadeTransitionsBuilder(),
+            TargetPlatform.iOS: FadeTransitionsBuilder(),
+            TargetPlatform.macOS: FadeTransitionsBuilder(),
+            TargetPlatform.linux: FadeTransitionsBuilder(),
+            TargetPlatform.windows: FadeTransitionsBuilder(),
+            TargetPlatform.fuchsia: FadeTransitionsBuilder(),
           },
         ),
       ),
