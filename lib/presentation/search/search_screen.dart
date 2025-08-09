@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../application/search/search_controller.dart';
+import '../../application/search/search_controller.dart' as search;
 import '../../application/core/async_state.dart';
 import '../../domain/entities/search_result.dart';
 import '../../infrastructure/di/locator.dart';
@@ -25,12 +25,12 @@ class _SearchScreenState extends State<SearchScreen> {
   final seatController = TextEditingController();
   DateTime? selectedDateTime;
 
-  late final SearchController controller;
+  late final search.SearchController controller =
+      search.SearchController(locator());
 
   @override
   void initState() {
     super.initState();
-    controller = SearchController(locator());
     controller.addListener(() => setState(() {}));
   }
 
