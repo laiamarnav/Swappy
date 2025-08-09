@@ -45,6 +45,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             children: [
               // ► AppBar blanco con iconos y texto grises
               AppBar(
+                automaticallyImplyLeading: false,
                 backgroundColor: Colors.white,
                 elevation: 0,
                 centerTitle: true,              

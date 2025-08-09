@@ -19,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
               backgroundColor: Colors.white,
               elevation: 0,
               centerTitle: true,
-          
+              automaticallyImplyLeading: false,
               title: const Text(
                 'Perfil',
                 style: TextStyle(

@@ -125,6 +125,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
       // AppBar blanco con iconos y texto grises
       appBar: AppBar(
+        
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
