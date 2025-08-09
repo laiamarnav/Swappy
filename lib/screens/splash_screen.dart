@@ -1,7 +1,9 @@
+// lib/screens/splash_screen.dart
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -11,28 +13,27 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _decideNext();
+  }
 
-    // Esta línea asegura que no se llame a Navigator demasiado pronto
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pushReplacementNamed(context, '/search');
-      });
-    });
+  Future<void> _decideNext() async {
+    await Future.delayed(const Duration(milliseconds: 900));
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('auth_user_id');
+
+    if (userId != null) {
+      Navigator.pushReplacementNamed(context, '/search');
+    } else {
+      Navigator.pushReplacementNamed(context, '/login');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Color(0xFF4F7FFF),
+      backgroundColor: Colors.white,
       body: Center(
-        child: Text(
-          'Swappy',
-          style: TextStyle(
-            fontSize: 32,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        child: Image(image: AssetImage('assets/logo.png'), height: 64),
       ),
     );
   }
