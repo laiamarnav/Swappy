@@ -11,6 +11,10 @@ import '../widgets/adaptive_scaffold.dart';
 import '../widgets/search_form.dart';
 import '../widgets/search_summary.dart';
 import '../widgets/seat_request_dialog.dart';
+import '../../ui/spacing.dart';
+import '../../ui/max_width.dart';
+import '../../ui/states/loading_state.dart';
+import '../../ui/states/empty_state.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -26,8 +30,9 @@ class _SearchScreenState extends State<SearchScreen> {
   final seatController = TextEditingController();
   DateTime? selectedDateTime;
 
-  late final search.SearchController controller =
-      search.SearchController(locator());
+  late final search.SearchController controller = search.SearchController(
+    locator(),
+  );
 
   @override
   void initState() {
@@ -62,8 +67,13 @@ class _SearchScreenState extends State<SearchScreen> {
     );
     if (time == null) return;
     setState(() {
-      selectedDateTime =
-          DateTime(date.year, date.month, date.day, time.hour, time.minute);
+      selectedDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
     });
   }
 
@@ -102,23 +112,23 @@ class _SearchScreenState extends State<SearchScreen> {
       fab: FloatingActionButton(
         heroTag: 'search',
         onPressed: _navigateCreate,
+        tooltip: 'Create listing',
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: Column(
+      body: MaxWidth(
+        child: Column(
           children: [
             AppBar(
               backgroundColor: Colors.white,
               elevation: 0,
               centerTitle: true,
               automaticallyImplyLeading: false,
-              title: const Text(
+              title: Text(
                 'Swappy',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(color: Colors.grey),
               ),
             ),
             if (state.status == AsyncStatus.idle)
@@ -128,16 +138,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 20),
+                      horizontal: spaceL,
+                      vertical: spaceM + spaceXS,
+                    ),
                     color: Colors.white,
-                    child: const Text(
+                    child: Text(
                       "Where's your\nnext destination",
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 79, 170, 255),
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        height: 1.1,
-                      ),
+                      style: Theme.of(context).textTheme.headlineLarge
+                          ?.copyWith(
+                            color: const Color.fromARGB(255, 79, 170, 255),
+                            height: 1.1,
+                          ),
                     ),
                   ),
                   Positioned(
@@ -157,16 +168,19 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(24, 0, 24, 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                spaceL,
+                0,
+                spaceL,
+                spaceS + spaceXS,
+              ),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Search your next trip',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 94, 94, 94),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: const Color.fromARGB(255, 94, 94, 94),
                   ),
                 ),
               ),
@@ -183,14 +197,17 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Builder(
                 builder: (context) {
                   if (state.status == AsyncStatus.loading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const LoadingState();
                   }
                   if (state.status == AsyncStatus.error) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Something went wrong'),
-                        const SizedBox(height: 12),
+                        Text(
+                          'Something went wrong',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: spaceS + spaceXS),
                         ElevatedButton(
                           onPressed: _submitSearch,
                           child: const Text('Retry'),
@@ -200,26 +217,32 @@ class _SearchScreenState extends State<SearchScreen> {
                   }
                   if (state.status == AsyncStatus.success) {
                     if (results.isEmpty) {
-                      return const Center(child: Text('No results found'));
+                      return const EmptyState(
+                        icon: Icons.search_off,
+                        title: 'No results found',
+                        subtitle: 'Try a different search',
+                      );
                     }
                     return SafeArea(
                       top: false,
                       child: ListView.builder(
                         padding: EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          top: 8,
+                          left: spaceM,
+                          right: spaceM,
+                          top: spaceS,
                           bottom: bottomPadding,
                         ),
                         itemCount: results.length,
                         itemBuilder: (context, i) {
                           final r = results[i];
                           return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(16),
+                            margin: const EdgeInsets.only(
+                              bottom: spaceS + spaceXS,
+                            ),
+                            padding: const EdgeInsets.all(spaceM),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(spaceM),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.05),
@@ -240,35 +263,60 @@ class _SearchScreenState extends State<SearchScreen> {
                                       children: [
                                         const Icon(
                                           Icons.flight_takeoff,
-                                          color: Color.fromARGB(255, 79, 170, 255),
+                                          color: Color.fromARGB(
+                                            255,
+                                            79,
+                                            170,
+                                            255,
+                                          ),
                                         ),
-                                        const SizedBox(width: 8),
+                                        const SizedBox(width: spaceS),
                                         Text(
                                           '${r.from} → ${r.to}',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                         ),
                                       ],
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
-                                        Text(Dates.ymd(r.dateTime),
-                                            style: const TextStyle(
-                                                color: Colors.grey, fontSize: 12)),
-                                        Text(Dates.time.format(r.dateTime),
-                                            style: const TextStyle(
-                                                color: Colors.grey, fontSize: 12)),
+                                        Text(
+                                          Dates.ymd(r.dateTime),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: Colors.grey,
+                                                fontSize: 12,
+                                              ),
+                                        ),
+                                        Text(
+                                          Dates.time.format(r.dateTime),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: Colors.grey,
+                                                fontSize: 12,
+                                              ),
+                                        ),
                                       ],
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                Text(r.airline,
-                                    style: const TextStyle(color: Colors.grey)),
-                                const Divider(height: 20),
+                                const SizedBox(height: spaceS),
+                                Text(
+                                  r.airline,
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(color: Colors.grey),
+                                ),
+                                const Divider(height: spaceM + spaceS),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -277,25 +325,17 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ElevatedButton.icon(
                                       onPressed: () =>
                                           showSeatRequestDialog(context, {
-                                        'airline': r.airline,
-                                        'from': r.from,
-                                        'to': r.to,
-                                        'seat': r.seat,
-                                        'date': Dates.ymd(r.dateTime),
-                                        'time': Dates.time.format(r.dateTime),
-                                      }),
+                                            'airline': r.airline,
+                                            'from': r.from,
+                                            'to': r.to,
+                                            'seat': r.seat,
+                                            'date': Dates.ymd(r.dateTime),
+                                            'time': Dates.time.format(
+                                              r.dateTime,
+                                            ),
+                                          }),
                                       icon: const Icon(Icons.event_seat),
                                       label: const Text('Solicitar asiento'),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            AppColors.primary.withOpacity(0.1),
-                                        foregroundColor: AppColors.primary,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                      ),
                                     ),
                                   ],
                                 ),
@@ -313,7 +353,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         final sectionWidth = constraints.maxWidth / 2;
                         return SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                            horizontal: spaceM,
+                            vertical: spaceS,
+                          ),
                           child: Column(
                             children: [
                               Row(
@@ -330,21 +372,24 @@ class _SearchScreenState extends State<SearchScreen> {
                                       onSubmit: _submitSearch,
                                     ),
                                   ),
-                                  const SizedBox(width: 16),
+                                  const SizedBox(width: spaceM),
                                   Expanded(
                                     child: DestinationCarousel(
-                                        screenWidth: sectionWidth),
+                                      screenWidth: sectionWidth,
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: spaceL),
                             ],
                           ),
                         );
                       }
                       return SingleChildScrollView(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                          horizontal: spaceM,
+                          vertical: spaceS,
+                        ),
                         child: Column(
                           children: [
                             SearchForm(
@@ -356,10 +401,11 @@ class _SearchScreenState extends State<SearchScreen> {
                               onPickDateTime: _pickDateTime,
                               onSubmit: _submitSearch,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: spaceS),
                             DestinationCarousel(
-                                screenWidth: constraints.maxWidth),
-                            const SizedBox(height: 24),
+                              screenWidth: constraints.maxWidth,
+                            ),
+                            const SizedBox(height: spaceL),
                           ],
                         ),
                       );
@@ -370,6 +416,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ],
         ),
+      ),
     );
   }
 }

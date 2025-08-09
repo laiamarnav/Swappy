@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/dates.dart';
+import '../../ui/spacing.dart';
 import 'tap_scale.dart';
 
 class SearchForm extends StatelessWidget {
@@ -29,10 +30,10 @@ class SearchForm extends StatelessWidget {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(spaceM),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(spaceL),
           boxShadow: [
             BoxShadow(
               color: Colors.black12,
@@ -47,9 +48,9 @@ class SearchForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _inputTile(Icons.location_on, "From", fromController),
-              const SizedBox(height: 16),
+              const SizedBox(height: spaceM),
               _inputTile(Icons.flight_takeoff, "To", toController),
-              const SizedBox(height: 16),
+              const SizedBox(height: spaceM),
               Row(
                 children: [
                   Expanded(
@@ -61,7 +62,7 @@ class SearchForm extends StatelessWidget {
                           : 'Pick a date',
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: spaceS + spaceXS),
                   Expanded(
                     child: _dateTimeTile(
                       Icons.access_time,
@@ -73,25 +74,19 @@ class SearchForm extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              _inputTile(Icons.airline_seat_recline_normal, "Seat", seatController),
-              const SizedBox(height: 24),
+              const SizedBox(height: spaceM),
+              _inputTile(
+                Icons.airline_seat_recline_normal,
+                "Seat",
+                seatController,
+              ),
+              const SizedBox(height: spaceL),
               SizedBox(
                 width: double.infinity,
                 child: TapScale(
-                  child: ElevatedButton(
+                  child: FilledButton(
                     onPressed: onSubmit,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      backgroundColor: AppColors.primary,
-                    ),
-                    child: const Text(
-                      "Search",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
+                    child: const Text("Search"),
                   ),
                 ),
               ),
@@ -102,11 +97,15 @@ class SearchForm extends StatelessWidget {
     );
   }
 
-  Widget _inputTile(IconData icon, String label, TextEditingController controller) {
+  Widget _inputTile(
+    IconData icon,
+    String label,
+    TextEditingController controller,
+  ) {
     return Row(
       children: [
         _iconBox(icon),
-        const SizedBox(width: 12),
+        const SizedBox(width: spaceS + spaceXS),
         Expanded(
           child: TextFormField(
             controller: controller,
@@ -114,13 +113,17 @@ class SearchForm extends StatelessWidget {
               labelText: label,
               filled: true,
               fillColor: Colors.grey[100],
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: spaceM,
+                vertical: spaceS + spaceXS,
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(spaceM),
                 borderSide: BorderSide.none,
               ),
             ),
-            validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Required' : null,
           ),
         ),
       ],
@@ -131,7 +134,7 @@ class SearchForm extends StatelessWidget {
     return Row(
       children: [
         _iconBox(icon),
-        const SizedBox(width: 12),
+        const SizedBox(width: spaceS + spaceXS),
         Expanded(
           child: GestureDetector(
             onTap: onPickDateTime,
@@ -140,9 +143,12 @@ class SearchForm extends StatelessWidget {
                 labelText: label,
                 filled: true,
                 fillColor: Colors.grey[100],
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: spaceM,
+                  vertical: spaceS + spaceXS,
+                ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(spaceM),
                   borderSide: BorderSide.none,
                 ),
               ),
@@ -156,10 +162,10 @@ class SearchForm extends StatelessWidget {
 
   Widget _iconBox(IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(spaceS + spaceXS),
       decoration: BoxDecoration(
         color: AppColors.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(spaceS + spaceXS),
       ),
       child: Icon(icon, color: AppColors.primary),
     );

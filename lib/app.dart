@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'routes.dart';
-import 'transitions.dart'; // Added for custom transitions
+import 'ui/theme.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -10,20 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Swappy',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        // Updated to use our custom slide transition globally
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: FadeTransitionsBuilder(),
-            TargetPlatform.iOS: FadeTransitionsBuilder(),
-            TargetPlatform.macOS: FadeTransitionsBuilder(),
-            TargetPlatform.linux: FadeTransitionsBuilder(),
-            TargetPlatform.windows: FadeTransitionsBuilder(),
-            TargetPlatform.fuchsia: FadeTransitionsBuilder(),
-          },
-        ),
-      ),
+      theme: appTheme(),
       initialRoute: '/',
       routes: appRoutes,
     );
