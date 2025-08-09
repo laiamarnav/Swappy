@@ -9,7 +9,7 @@ import 'package:swappy/screens/onboarding_screen.dart';
 import 'package:swappy/screens/published_listings_screen.dart';
 import 'package:swappy/screens/register_screen.dart';
 import 'package:swappy/screens/report_problem_screen.dart';
-import 'package:swappy/screens/search_screen.dart';
+import 'package:swappy/presentation/search/search_screen.dart';
 import 'package:swappy/screens/splash_screen.dart';
 import 'package:swappy/screens/profile_screen.dart';
 

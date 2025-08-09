@@ -1,12 +1,14 @@
-// lib/screens/search_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../application/search/search_controller.dart';
+import '../../application/core/async_state.dart';
+import '../../domain/entities/search_result.dart';
+import '../../infrastructure/di/locator.dart';
+import '../widgets/destination_carousel.dart';
 import '../widgets/main_scaffold.dart';
 import '../widgets/search_form.dart';
 import '../widgets/search_summary.dart';
-import '../widgets/destination_carousel.dart';
 import '../widgets/seat_request_dialog.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -17,64 +19,29 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final _formKey       = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final fromController = TextEditingController();
-  final toController   = TextEditingController();
+  final toController = TextEditingController();
   final seatController = TextEditingController();
   DateTime? selectedDateTime;
-  bool _hasSearched    = false;
 
-  // Aquí defines TUS anuncios; pon 3, 7, 10… tantos como quieras
-  final List<Map<String, String>> searchResults = [
-    {
-      'airline':'Air France',
-      'from':'Barcelona',
-      'to':'Paris',
-      'seat':'12A',
-      'date':'2025-11-30',
-      'time':'10:15'
-    },
-    {
-      'airline':'Vueling',
-      'from':'Barcelona',
-      'to':'Rome',
-      'seat':'9C',
-      'date':'2025-11-30',
-      'time':'12:20'
-    },
-    {
-      'airline':'KLM',
-      'from':'Berlin',
-      'to':'Amsterdam',
-      'seat':'8B',
-      'date':'2025-12-01',
-      'time':'09:45'
-    },
-        {
-      'airline':'Air France',
-      'from':'Barcelona',
-      'to':'Paris',
-      'seat':'12A',
-      'date':'2025-11-30',
-      'time':'10:15'
-    },
-    {
-      'airline':'Vueling',
-      'from':'Barcelona',
-      'to':'Rome',
-      'seat':'9C',
-      'date':'2025-11-30',
-      'time':'12:20'
-    },
-    {
-      'airline':'KLM',
-      'from':'Berlin',
-      'to':'Amsterdam',
-      'seat':'8B',
-      'date':'2025-12-01',
-      'time':'09:45'
-    },
-  ];
+  late final SearchController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = SearchController(locator());
+    controller.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    fromController.dispose();
+    toController.dispose();
+    seatController.dispose();
+    super.dispose();
+  }
 
   void _navigateCreate() {
     Navigator.pushNamed(context, '/create').then((_) => setState(() {}));
@@ -84,8 +51,8 @@ class _SearchScreenState extends State<SearchScreen> {
     final date = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate:   DateTime.now(),
-      lastDate:    DateTime(2030),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
     );
     if (date == null) return;
     final time = await showTimePicker(
@@ -94,14 +61,19 @@ class _SearchScreenState extends State<SearchScreen> {
     );
     if (time == null) return;
     setState(() {
-      selectedDateTime = DateTime(
-        date.year, date.month, date.day, time.hour, time.minute);
+      selectedDateTime =
+          DateTime(date.year, date.month, date.day, time.hour, time.minute);
     });
   }
 
   void _submitSearch() {
     if (_formKey.currentState!.validate() && selectedDateTime != null) {
-      setState(() => _hasSearched = true);
+      controller.search(
+        from: fromController.text,
+        to: toController.text,
+        seat: seatController.text,
+        dateTime: selectedDateTime!,
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
@@ -112,20 +84,21 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom + 16;
+    final hasSearched = controller.state.status == AsyncStatus.success;
+    final results = controller.state.data ?? <SearchResult>[];
 
     return MainScaffold(
       currentIndex: 1,
       child: Scaffold(
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
-          heroTag: "search",
+          heroTag: 'search',
           onPressed: _navigateCreate,
           backgroundColor: Colors.blue,
           child: const Icon(Icons.add, color: Colors.white),
         ),
         body: Column(
           children: [
-            // AppBar blanco sin flecha
             AppBar(
               backgroundColor: Colors.white,
               elevation: 0,
@@ -140,9 +113,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
-
-            // Header gráfico solo cuando NO se ha buscado
-            if (!_hasSearched)
+            if (!hasSearched)
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -178,13 +149,12 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
-
             const Padding(
               padding: EdgeInsets.fromLTRB(24, 0, 24, 12),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Search your next trip",
+                  'Search your next trip',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -193,19 +163,16 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
-
-            if (_hasSearched)
+            if (hasSearched)
               SearchSummary(
                 from: fromController.text,
                 to: toController.text,
                 seat: seatController.text,
                 dateTime: selectedDateTime,
-                onEdit: () => setState(() => _hasSearched = false),
+                onEdit: () => controller.state = const AsyncState.idle(),
               ),
-
             Expanded(
-              child: _hasSearched
-                  // RESULTADOS: dinámico según searchResults.length
+              child: hasSearched
                   ? SafeArea(
                       top: false,
                       child: ListView.builder(
@@ -215,9 +182,9 @@ class _SearchScreenState extends State<SearchScreen> {
                           top: 8,
                           bottom: bottomPadding,
                         ),
-                        itemCount: searchResults.length,
+                        itemCount: results.length,
                         itemBuilder: (context, i) {
-                          final r = searchResults[i];
+                          final r = results[i];
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
@@ -236,7 +203,6 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // fila superior: ruta y fecha/hora
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -245,12 +211,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                       children: [
                                         const Icon(
                                           Icons.flight_takeoff,
-                                          color: Color.fromARGB(
-                                              255, 79, 170, 255),
+                                          color: Color.fromARGB(255, 79, 170, 255),
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
-                                          '${r['from']} → ${r['to']}',
+                                          '${r.from} → ${r.to}',
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -259,35 +224,39 @@ class _SearchScreenState extends State<SearchScreen> {
                                       ],
                                     ),
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
-                                        Text(r['date']!,
+                                        Text(DateFormat('yyyy-MM-dd').format(r.dateTime),
                                             style: const TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12)),
-                                        Text(r['time']!,
+                                                color: Colors.grey, fontSize: 12)),
+                                        Text(DateFormat('HH:mm').format(r.dateTime),
                                             style: const TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12)),
+                                                color: Colors.grey, fontSize: 12)),
                                       ],
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-                                Text(r['airline']!,
+                                Text(r.airline,
                                     style: const TextStyle(color: Colors.grey)),
                                 const Divider(height: 20),
-
-                                // pie: asiento + botón
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Seat: ${r['seat']}'),
+                                    Text('Seat: ${r.seat}'),
                                     ElevatedButton.icon(
                                       onPressed: () =>
-                                          showSeatRequestDialog(context, r),
+                                          showSeatRequestDialog(context, {
+                                        'airline': r.airline,
+                                        'from': r.from,
+                                        'to': r.to,
+                                        'seat': r.seat,
+                                        'date': DateFormat('yyyy-MM-dd')
+                                            .format(r.dateTime),
+                                        'time': DateFormat('HH:mm')
+                                            .format(r.dateTime),
+                                      }),
                                       icon: const Icon(Icons.event_seat),
                                       label: const Text('Solicitar asiento'),
                                       style: ElevatedButton.styleFrom(
@@ -309,7 +278,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         },
                       ),
                     )
-                  // FORMULARIO + CAROUSEL: scroll normal
                   : SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
