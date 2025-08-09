@@ -3,10 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
-import '../screens/notifications_screen.dart';
-import '../screens/search_screen.dart';
-import '../screens/profile_screen.dart';
-import '../screens/create_listing_screen.dart';
 
 class MainScaffold extends StatefulWidget {
   final int currentIndex;
