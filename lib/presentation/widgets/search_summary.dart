@@ -21,36 +21,52 @@ class SearchSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _flatSummaryItem(Icons.location_on, "From: $from"),
-                  _flatSummaryItem(Icons.flight_takeoff, "To: $to"),
-                  if (dateTime != null)
+    final disable = MediaQuery.of(context).disableAnimations;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: disable ? 1 : 0, end: 1),
+      duration: disable ? Duration.zero : const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, (1 - value) * 8),
+            child: child,
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _flatSummaryItem(Icons.location_on, "From: $from"),
+                    _flatSummaryItem(Icons.flight_takeoff, "To: $to"),
+                    if (dateTime != null)
+                      _flatSummaryItem(
+                          Icons.calendar_today, Dates.date.format(dateTime!)),
+                    if (dateTime != null)
+                      _flatSummaryItem(
+                          Icons.access_time, Dates.time.format(dateTime!)),
                     _flatSummaryItem(
-                        Icons.calendar_today, Dates.date.format(dateTime!)),
-                  if (dateTime != null)
-                    _flatSummaryItem(
-                        Icons.access_time, Dates.time.format(dateTime!)),
-                  _flatSummaryItem(Icons.airline_seat_recline_normal, "Seat: $seat"),
-                ],
+                        Icons.airline_seat_recline_normal, "Seat: $seat"),
+                  ],
+                ),
               ),
             ),
-          ),
-          IconButton(
-            onPressed: onEdit,
-            icon: const Icon(Icons.edit,
-                color: AppColors.primary, size: 20),
-            tooltip: "Edit",
-          ),
-        ],
+            IconButton(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit,
+                  color: AppColors.primary, size: 20),
+              tooltip: "Edit",
+            ),
+          ],
+        ),
       ),
     );
   }

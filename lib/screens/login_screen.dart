@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_colors.dart';
 import '../constants/app_keys.dart';
+import '../presentation/widgets/tap_scale.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -67,7 +68,10 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
-        title: Image.asset('assets/swappy.png', height: 32),
+        title: Hero(
+          tag: 'app-logo',
+          child: Image.asset('assets/logo.png', height: 32),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -152,17 +156,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         height: 50,
-                        child: ElevatedButton(
-                          onPressed: _submit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                        child: TapScale(
+                          child: ElevatedButton(
+                            onPressed: _submit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            'Entrar',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            child: const Text(
+                              'Entrar',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16),
+                            ),
                           ),
                         ),
                       ),

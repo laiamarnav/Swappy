@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/dates.dart';
+import 'tap_scale.dart';
 
 class SearchForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -77,18 +78,20 @@ class SearchForm extends StatelessWidget {
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: onSubmit,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                child: TapScale(
+                  child: ElevatedButton(
+                    onPressed: onSubmit,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      backgroundColor: AppColors.primary,
                     ),
-                    backgroundColor: AppColors.primary,
-                  ),
-                  child: const Text(
-                    "Search",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    child: const Text(
+                      "Search",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                   ),
                 ),
               ),

@@ -12,11 +12,37 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnim;
+  late final Animation<double> _fadeAnim;
+
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _scaleAnim = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutBack,
+    );
+    _fadeAnim = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    );
     _decideNext();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.of(context).disableAnimations) {
+      _controller.duration = Duration.zero;
+    }
+    _controller.forward();
   }
 
   Future<void> _decideNext() async {
@@ -32,11 +58,27 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(
-        child: Image(image: AssetImage('assets/logo.png'), height: 64),
+        child: Hero(
+          tag: 'app-logo',
+          child: FadeTransition(
+            opacity: _fadeAnim,
+            child: ScaleTransition(
+              scale: _scaleAnim,
+              child:
+                  const Image(image: AssetImage('assets/logo.png'), height: 64),
+            ),
+          ),
+        ),
       ),
     );
   }
