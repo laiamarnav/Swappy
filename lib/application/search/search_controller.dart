@@ -32,4 +32,9 @@ class SearchController extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void reset() {
+    state = const AsyncState.idle();
+    notifyListeners();
+  }
 }
