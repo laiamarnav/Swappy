@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 
+import 'package:swappy/core/responsive/responsive.dart';
 import 'package:swappy/presentation/widgets/main_scaffold.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -12,87 +13,123 @@ class ProfileScreen extends StatelessWidget {
     return MainScaffold(
       currentIndex: 2,
       child: SafeArea(
-        child: Column(
-          children: [
-            // ► AppBar blanco con texto e iconos grises
-            AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
-              centerTitle: true,
-              automaticallyImplyLeading: false,
-              title: const Text(
-                'Perfil',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w200,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= Breakpoints.tablet;
+
+            // Header with avatar and name.
+            final header = Column(
+              children: [
+                const CircleAvatar(
+                  radius: 48,
+                  backgroundImage: AssetImage('assets/avatar.png'),
                 ),
-              ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.person),
-                  color: Colors.grey,
-                  onPressed: () {},
+                SizedBox(height: space(context)),
+                const Text(
+                  'Adriano',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(height: space(context) / 2),
+                Text(
+                  'Viajero estrella',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                ),
               ],
-            ),
+            );
 
-            const SizedBox(height: 24),
+            // Options list reused in both layouts.
+            final options = <Widget>[
+              _OptionTile(
+                icon: Icons.list_alt,
+                label: 'Anuncios publicados',
+                onTap: () => Navigator.pushNamed(context, '/published_listings'),
+              ),
+              _OptionTile(
+                icon: Icons.edit,
+                label: 'Editar perfil',
+                onTap: () => Navigator.pushNamed(context, '/edit_profile'),
+              ),
+              _OptionTile(
+                icon: Icons.notifications,
+                label: 'Configurar notificaciones',
+                onTap: () => Navigator.pushNamed(context, '/notifications_settings'),
+              ),
+              _OptionTile(
+                icon: Icons.report_problem,
+                label: 'Reportar un problema',
+                onTap: () => Navigator.pushNamed(context, '/report_problem'),
+              ),
+              _OptionTile(
+                icon: Icons.info,
+                label: 'Sobre la app',
+                onTap: () => Navigator.pushNamed(context, '/about_app'),
+              ),
+              _OptionTile(
+                icon: Icons.logout,
+                label: 'Cerrar sesión',
+                onTap: () => _showLogoutDialog(context),
+              ),
+            ];
 
-            // ► Avatar y nombre
-            const CircleAvatar(
-              radius: 48,
-              backgroundImage: AssetImage("assets/avatar.png"),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Adriano',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Viajero estrella',
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-            ),
+            Widget content;
+            if (isWide) {
+              content = Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 2, child: header),
+                  SizedBox(width: space(context)),
+                  Expanded(
+                    flex: 3,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: options,
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              content = ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  header,
+                  SizedBox(height: space(context) * 2),
+                  ...options,
+                ],
+              );
+            }
 
-            const SizedBox(height: 32),
-
-            // ► Opciones
-            _OptionTile(
-              icon: Icons.list_alt,
-              label: 'Anuncios publicados',
-              onTap: () => Navigator.pushNamed(context, '/published_listings'),
-            ),
-            _OptionTile(
-              icon: Icons.edit,
-              label: 'Editar perfil',
-              onTap: () => Navigator.pushNamed(context, '/edit_profile'),
-            ),
-            _OptionTile(
-              icon: Icons.notifications,
-              label: 'Configurar notificaciones',
-              onTap: () =>
-                  Navigator.pushNamed(context, '/notifications_settings'),
-            ),
-            _OptionTile(
-              icon: Icons.report_problem,
-              label: 'Reportar un problema',
-              onTap: () => Navigator.pushNamed(context, '/report_problem'),
-            ),
-            _OptionTile(
-              icon: Icons.info,
-              label: 'Sobre la app',
-              onTap: () => Navigator.pushNamed(context, '/about_app'),
-            ),
-            _OptionTile(
-              icon: Icons.logout,
-              label: 'Cerrar sesión',
-              onTap: () => _showLogoutDialog(context),
-            ),
-
-            const Spacer(),
-          ],
+            return Padding(
+              padding: EdgeInsets.all(gutter(context)),
+              child: Column(
+                children: [
+                  AppBar(
+                    backgroundColor: Colors.white,
+                    elevation: 0,
+                    centerTitle: true,
+                    automaticallyImplyLeading: false,
+                    title: const Text(
+                      'Perfil',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w200,
+                      ),
+                    ),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.person),
+                        color: Colors.grey,
+                        onPressed: () {},
+                      ),
+                      SizedBox(width: space(context)),
+                    ],
+                  ),
+                  SizedBox(height: space(context) * 2),
+                  Expanded(child: content),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -136,7 +173,7 @@ class _OptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(space(context) / 1.5),
         decoration: BoxDecoration(
           color: Colors.blue.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
@@ -145,8 +182,8 @@ class _OptionTile extends StatelessWidget {
       ),
       title: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      horizontalTitleGap: 16,
+      contentPadding: EdgeInsets.symmetric(horizontal: gutter(context) / 2),
+      horizontalTitleGap: space(context),
     );
   }
 }
