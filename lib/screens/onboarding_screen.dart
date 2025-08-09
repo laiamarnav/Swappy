@@ -19,19 +19,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: "Encuentra tu\nsiguiente destino",
       subtitle:
           "Busca asientos disponibles y filtra por origen, destino y fecha.",
-      imageAsset: "assets/illustrations/plane_search.png",
+      imageAsset: "assets/plane_search.png",
     ),
     _SlideData(
-      title: "Publica y\nintercambia",
+      title: "Publica e\nintercambia",
       subtitle:
           "Sube tu asiento fácilmente y gestiona solicitudes en un solo lugar.",
-      imageAsset: "assets/illustrations/seat_post.png",
+      imageAsset: "assets/seat_post.png",
     ),
     _SlideData(
       title: "Conecta con\nviajeros",
       subtitle:
           "Chatea, acepta o rechaza; organiza tu viaje sin complicaciones.",
-      imageAsset: "assets/illustrations/travel_chat.png",
+      imageAsset: "assets/travel_chat.png",
     ),
   ];
 
