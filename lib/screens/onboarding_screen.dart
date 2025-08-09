@@ -77,7 +77,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
-        title: Image.asset('assets/swappy.png', height: 32),
+        // Hero to match register/login logo transitions
+        title: const Hero(
+          tag: 'app-logo',
+          child: Image(image: AssetImage('assets/logo.png'), height: 32),
+        ),
       ),
 
       body: SafeArea(

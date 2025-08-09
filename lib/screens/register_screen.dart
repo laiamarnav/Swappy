@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_colors.dart';
 import '../constants/app_keys.dart';
+import '../transitions.dart'; // Custom transitions
+import 'onboarding_screen.dart'; // Navigate after register
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -42,9 +44,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString(AppKeys.authUserId, 'user_demo');
 
-  // Ve al Onboarding post-registro
+  // Ve al Onboarding post-registro con animación scale + fade
   if (!mounted) return;
-  Navigator.pushReplacementNamed(context, '/onboarding');
+  Navigator.of(context).pushReplacement(
+    ScaleFadePageRoute(page: const OnboardingScreen()),
+  );
   }
 
   @override
@@ -56,7 +60,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
-        title: Image.asset('assets/swappy.png', height: 32),
+        // Added Hero for shared logo between screens
+        title: const Hero(
+          tag: 'app-logo',
+          child: Image(image: AssetImage('assets/logo.png'), height: 32),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),

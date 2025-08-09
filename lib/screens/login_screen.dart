@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_keys.dart';
 import '../presentation/widgets/tap_scale.dart';
+import '../presentation/search/search_screen.dart'; // Import for navigation
+import '../transitions.dart'; // Custom transitions
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -36,8 +38,11 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Sesión iniciada')),
     );
-    // Ir a la home principal (ajusta si prefieres otra)
-    Navigator.pushNamedAndRemoveUntil(context, '/search', (_) => false);
+    // Ir a la home principal con transición fade
+    Navigator.of(context).pushAndRemoveUntil(
+      FadePageRoute(page: const SearchScreen()),
+      (_) => false,
+    );
   }
 
   void _forgotPassword() {
