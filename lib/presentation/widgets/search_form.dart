@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
+import '../../constants/app_colors.dart';
+import '../../constants/dates.dart';
 
 class SearchForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -54,7 +56,7 @@ class SearchForm extends StatelessWidget {
                       Icons.calendar_today,
                       "Date",
                       selectedDateTime != null
-                          ? DateFormat('dd/MM/yyyy').format(selectedDateTime!)
+                          ? Dates.date.format(selectedDateTime!)
                           : 'Pick a date',
                     ),
                   ),
@@ -64,7 +66,7 @@ class SearchForm extends StatelessWidget {
                       Icons.access_time,
                       "Hora",
                       selectedDateTime != null
-                          ? DateFormat('HH:mm').format(selectedDateTime!)
+                          ? Dates.time.format(selectedDateTime!)
                           : '--:--',
                     ),
                   ),
@@ -82,7 +84,7 @@ class SearchForm extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    backgroundColor: Colors.blue,
+                    backgroundColor: AppColors.primary,
                   ),
                   child: const Text(
                     "Search",
@@ -153,10 +155,10 @@ class SearchForm extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: AppColors.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(icon, color: Colors.blue),
+      child: Icon(icon, color: AppColors.primary),
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
+import '../../constants/app_colors.dart';
+import '../../constants/dates.dart';
 
 class SearchSummary extends StatelessWidget {
   final String from;
@@ -32,11 +34,11 @@ class SearchSummary extends StatelessWidget {
                   _flatSummaryItem(Icons.location_on, "From: $from"),
                   _flatSummaryItem(Icons.flight_takeoff, "To: $to"),
                   if (dateTime != null)
-                    _flatSummaryItem(Icons.calendar_today,
-                        DateFormat('dd/MM/yyyy').format(dateTime!)),
+                    _flatSummaryItem(
+                        Icons.calendar_today, Dates.date.format(dateTime!)),
                   if (dateTime != null)
-                    _flatSummaryItem(Icons.access_time,
-                        DateFormat('HH:mm').format(dateTime!)),
+                    _flatSummaryItem(
+                        Icons.access_time, Dates.time.format(dateTime!)),
                   _flatSummaryItem(Icons.airline_seat_recline_normal, "Seat: $seat"),
                 ],
               ),
@@ -45,7 +47,7 @@ class SearchSummary extends StatelessWidget {
           IconButton(
             onPressed: onEdit,
             icon: const Icon(Icons.edit,
-                color: Color.fromARGB(255, 130, 199, 255), size: 20),
+                color: AppColors.primary, size: 20),
             tooltip: "Edit",
           ),
         ],
@@ -58,12 +60,12 @@ class SearchSummary extends StatelessWidget {
       margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: AppColors.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: Colors.blue),
+          Icon(icon, size: 16, color: AppColors.primary),
           const SizedBox(width: 6),
           Text(label, style: const TextStyle(fontSize: 14)),
         ],

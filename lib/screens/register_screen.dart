@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/app_colors.dart';
+import '../constants/app_keys.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
 
@@ -37,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   // Simula registro OK → guarda sesión
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('auth_user_id', 'user_demo');
+  await prefs.setString(AppKeys.authUserId, 'user_demo');
 
   // Ve al Onboarding post-registro
   if (!mounted) return;
@@ -46,8 +49,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF5078F2);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -67,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Text(
                 'Crea tu cuenta',
                 style: TextStyle(
-                  color: primary,
+                  color: AppColors.primary,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   height: 1.2,
@@ -151,8 +152,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Checkbox(
                             value: _acceptTerms,
-                            activeColor: primary,
-                            onChanged: (v) => setState(() => _acceptTerms = v ?? false),
+                            activeColor: AppColors.primary,
+                            onChanged: (v) =>
+                                setState(() => _acceptTerms = v ?? false),
                           ),
                           const Expanded(
                             child: Text(
@@ -170,7 +172,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: ElevatedButton(
                           onPressed: _submit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: primary,
+                            backgroundColor: AppColors.primary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -223,17 +225,15 @@ class _InputRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF5078F2);
-
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: primary.withOpacity(0.1),
+            color: AppColors.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: primary),
+          child: Icon(icon, color: AppColors.primary),
         ),
         const SizedBox(width: 12),
         Expanded(
