@@ -3,16 +3,33 @@
 import 'package:flutter/material.dart';
 
 import 'package:swappy/core/responsive/responsive.dart';
-import 'package:swappy/presentation/widgets/main_scaffold.dart';
+import 'package:swappy/presentation/widgets/adaptive_scaffold.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MainScaffold(
+    final routes = ['/notifications', '/search', '/profile'];
+
+    void onSelect(int i) {
+      if (i == 2) return;
+      Navigator.pushReplacementNamed(context, routes[i]);
+    }
+
+    void goToCreate() {
+      Navigator.of(context).pushNamed('/create');
+    }
+
+    return AdaptiveScaffold(
       currentIndex: 2,
-      child: SafeArea(
+      onSelect: onSelect,
+      fab: FloatingActionButton(
+        onPressed: goToCreate,
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final isWide = constraints.maxWidth >= Breakpoints.tablet;
@@ -80,21 +97,25 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(width: space(context)),
                   Expanded(
                     flex: 3,
-                    child: ListView(
+                    child: ListView.separated(
                       shrinkWrap: true,
-                      children: options,
+                      itemBuilder: (_, i) => options[i],
+                      separatorBuilder: (_, __) => const SizedBox(height: 16),
+                      itemCount: options.length,
                     ),
                   ),
                 ],
               );
             } else {
-              content = ListView(
+              content = ListView.separated(
                 padding: EdgeInsets.zero,
-                children: [
-                  header,
-                  SizedBox(height: space(context) * 2),
-                  ...options,
-                ],
+                itemCount: options.length + 2,
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  if (index == 0) return header;
+                  if (index == 1) return SizedBox(height: space(context) * 2);
+                  return options[index - 2];
+                },
               );
             }
 
