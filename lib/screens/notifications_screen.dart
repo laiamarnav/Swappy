@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'package:swappy/presentation/widgets/main_scaffold.dart';
+import 'package:swappy/presentation/widgets/adaptive_scaffold.dart';
 import '../data/app_state.dart';
 import '../models/exchange_request.dart';
 import '../models/listing.dart';
@@ -17,6 +17,7 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   late final ScrollController _scrollController;
+  final _routes = ['/notifications', '/search', '/profile'];
 
   @override
   void initState() {
@@ -32,9 +33,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MainScaffold(
+    void onSelect(int i) {
+      if (i == 0) return;
+      Navigator.pushReplacementNamed(context, _routes[i]);
+    }
+
+    void goToCreate() {
+      Navigator.of(context).pushNamed('/create');
+    }
+
+    return AdaptiveScaffold(
       currentIndex: 0,
-      child: AnimatedBuilder(
+      onSelect: onSelect,
+      fab: FloatingActionButton(
+        onPressed: goToCreate,
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      body: AnimatedBuilder(
         animation: AppState.instance,
         builder: (context, _) {
           final recv = AppState.instance.getReceivedRequests();

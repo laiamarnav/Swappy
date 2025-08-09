@@ -7,7 +7,7 @@ import '../../constants/dates.dart';
 import '../../domain/entities/search_result.dart';
 import '../../infrastructure/di/locator.dart';
 import '../widgets/destination_carousel.dart';
-import '../widgets/main_scaffold.dart';
+import '../widgets/adaptive_scaffold.dart';
 import '../widgets/search_form.dart';
 import '../widgets/search_summary.dart';
 import '../widgets/seat_request_dialog.dart';
@@ -82,6 +82,8 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  final _routes = ['/notifications', '/search', '/profile'];
+
   @override
   Widget build(BuildContext context) {
     final state = controller.state;
@@ -89,17 +91,21 @@ class _SearchScreenState extends State<SearchScreen> {
     final results = state.data ?? <SearchResult>[];
     final hasSearched = state.status == AsyncStatus.success;
 
-    return MainScaffold(
+    void onSelect(int i) {
+      if (i == 1) return;
+      Navigator.pushReplacementNamed(context, _routes[i]);
+    }
+
+    return AdaptiveScaffold(
       currentIndex: 1,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
-          heroTag: 'search',
-          onPressed: _navigateCreate,
-          backgroundColor: AppColors.primary,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
-        body: Column(
+      onSelect: onSelect,
+      fab: FloatingActionButton(
+        heroTag: 'search',
+        onPressed: _navigateCreate,
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      body: Column(
           children: [
             AppBar(
               backgroundColor: Colors.white,
@@ -300,33 +306,70 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     );
                   }
-                  return SingleChildScrollView(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Column(
-                      children: [
-                        SearchForm(
-                          formKey: _formKey,
-                          fromController: fromController,
-                          toController: toController,
-                          seatController: seatController,
-                          selectedDateTime: selectedDateTime,
-                          onPickDateTime: _pickDateTime,
-                          onSubmit: _submitSearch,
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth >= 600;
+                      if (isWide) {
+                        final sectionWidth = constraints.maxWidth / 2;
+                        return SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: Column(
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: SearchForm(
+                                      formKey: _formKey,
+                                      fromController: fromController,
+                                      toController: toController,
+                                      seatController: seatController,
+                                      selectedDateTime: selectedDateTime,
+                                      onPickDateTime: _pickDateTime,
+                                      onSubmit: _submitSearch,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: DestinationCarousel(
+                                        screenWidth: sectionWidth),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        );
+                      }
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: Column(
+                          children: [
+                            SearchForm(
+                              formKey: _formKey,
+                              fromController: fromController,
+                              toController: toController,
+                              seatController: seatController,
+                              selectedDateTime: selectedDateTime,
+                              onPickDateTime: _pickDateTime,
+                              onSubmit: _submitSearch,
+                            ),
+                            const SizedBox(height: 8),
+                            DestinationCarousel(
+                                screenWidth: constraints.maxWidth),
+                            const SizedBox(height: 24),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        DestinationCarousel(
-                            screenWidth: MediaQuery.of(context).size.width),
-                        const SizedBox(height: 24),
-                      ],
-                    ),
+                      );
+                    },
                   );
                 },
               ),
             ),
           ],
         ),
-      ),
     );
   }
 }
