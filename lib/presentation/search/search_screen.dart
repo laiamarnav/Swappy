@@ -11,6 +11,7 @@ import '../widgets/main_scaffold.dart';
 import '../widgets/search_form.dart';
 import '../widgets/search_summary.dart';
 import '../widgets/seat_request_dialog.dart';
+import '../widgets/tap_scale.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -88,6 +89,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final bottomPadding = MediaQuery.of(context).padding.bottom + 16;
     final results = state.data ?? <SearchResult>[];
     final hasSearched = state.status == AsyncStatus.success;
+    final disableAnimations = MediaQuery.of(context).disableAnimations;
 
     return MainScaffold(
       currentIndex: 1,
@@ -106,13 +108,9 @@ class _SearchScreenState extends State<SearchScreen> {
               elevation: 0,
               centerTitle: true,
               automaticallyImplyLeading: false,
-              title: const Text(
-                'Swappy',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
+              title: Hero(
+                tag: 'app-logo',
+                child: Image.asset('assets/logo.png', height: 32),
               ),
             ),
             if (state.status == AsyncStatus.idle)
@@ -174,29 +172,44 @@ class _SearchScreenState extends State<SearchScreen> {
                 onEdit: () => controller.state = const AsyncState.idle(),
               ),
             Expanded(
-              child: Builder(
-                builder: (context) {
+              child: AnimatedSwitcher(
+                duration: disableAnimations
+                    ? Duration.zero
+                    : const Duration(milliseconds: 250),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: () {
                   if (state.status == AsyncStatus.loading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      key: ValueKey('loading'),
+                      child: CircularProgressIndicator(),
+                    );
                   }
                   if (state.status == AsyncStatus.error) {
                     return Column(
+                      key: const ValueKey('error'),
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text('Something went wrong'),
                         const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: _submitSearch,
-                          child: const Text('Retry'),
+                        TapScale(
+                          child: ElevatedButton(
+                            onPressed: _submitSearch,
+                            child: const Text('Retry'),
+                          ),
                         ),
                       ],
                     );
                   }
                   if (state.status == AsyncStatus.success) {
                     if (results.isEmpty) {
-                      return const Center(child: Text('No results found'));
+                      return const Center(
+                        key: ValueKey('empty'),
+                        child: Text('No results found'),
+                      );
                     }
                     return SafeArea(
+                      key: const ValueKey('search-results'),
                       top: false,
                       child: ListView.builder(
                         padding: EdgeInsets.only(
@@ -208,7 +221,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         itemCount: results.length,
                         itemBuilder: (context, i) {
                           final r = results[i];
-                          return Container(
+                          final item = Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -234,7 +247,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                       children: [
                                         const Icon(
                                           Icons.flight_takeoff,
-                                          color: Color.fromARGB(255, 79, 170, 255),
+                                          color:
+                                              Color.fromARGB(255, 79, 170, 255),
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
@@ -247,14 +261,21 @@ class _SearchScreenState extends State<SearchScreen> {
                                       ],
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
-                                        Text(Dates.ymd(r.dateTime),
-                                            style: const TextStyle(
-                                                color: Colors.grey, fontSize: 12)),
-                                        Text(Dates.time.format(r.dateTime),
-                                            style: const TextStyle(
-                                                color: Colors.grey, fontSize: 12)),
+                                        Text(
+                                          Dates.ymd(r.dateTime),
+                                          style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12),
+                                        ),
+                                        Text(
+                                          Dates.time.format(r.dateTime),
+                                          style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12),
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -268,26 +289,30 @@ class _SearchScreenState extends State<SearchScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Seat: ${r.seat}'),
-                                    ElevatedButton.icon(
-                                      onPressed: () =>
-                                          showSeatRequestDialog(context, {
-                                        'airline': r.airline,
-                                        'from': r.from,
-                                        'to': r.to,
-                                        'seat': r.seat,
-                                        'date': Dates.ymd(r.dateTime),
-                                        'time': Dates.time.format(r.dateTime),
-                                      }),
-                                      icon: const Icon(Icons.event_seat),
-                                      label: const Text('Solicitar asiento'),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            AppColors.primary.withOpacity(0.1),
-                                        foregroundColor: AppColors.primary,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
+                                    TapScale(
+                                      child: ElevatedButton.icon(
+                                        onPressed: () =>
+                                            showSeatRequestDialog(context, {
+                                          'airline': r.airline,
+                                          'from': r.from,
+                                          'to': r.to,
+                                          'seat': r.seat,
+                                          'date': Dates.ymd(r.dateTime),
+                                          'time':
+                                              Dates.time.format(r.dateTime),
+                                        }),
+                                        icon: const Icon(Icons.event_seat),
+                                        label:
+                                            const Text('Solicitar asiento'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColors.primary
+                                              .withOpacity(0.1),
+                                          foregroundColor: AppColors.primary,
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -296,13 +321,15 @@ class _SearchScreenState extends State<SearchScreen> {
                               ],
                             ),
                           );
+                          return _AnimatedResultItem(index: i, child: item);
                         },
                       ),
                     );
                   }
                   return SingleChildScrollView(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    key: const ValueKey('search-form'),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
                     child: Column(
                       children: [
                         SearchForm(
@@ -321,11 +348,58 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     ),
                   );
-                },
+                }(),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AnimatedResultItem extends StatefulWidget {
+  final Widget child;
+  final int index;
+
+  const _AnimatedResultItem({required this.child, required this.index});
+
+  @override
+  State<_AnimatedResultItem> createState() => _AnimatedResultItemState();
+}
+
+class _AnimatedResultItemState extends State<_AnimatedResultItem> {
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final disable = MediaQuery.of(context).disableAnimations;
+      if (disable) {
+        setState(() => _visible = true);
+      } else {
+        Future.delayed(Duration(milliseconds: widget.index * 50), () {
+          if (mounted) setState(() => _visible = true);
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final duration = MediaQuery.of(context).disableAnimations
+        ? Duration.zero
+        : const Duration(milliseconds: 300);
+    return AnimatedOpacity(
+      opacity: _visible ? 1 : 0,
+      duration: duration,
+      curve: Curves.easeOut,
+      child: AnimatedSlide(
+        offset: _visible ? Offset.zero : const Offset(0, 0.1),
+        duration: duration,
+        curve: Curves.easeOut,
+        child: widget.child,
       ),
     );
   }
