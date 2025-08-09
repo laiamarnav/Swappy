@@ -1,3 +1,4 @@
+import '../../constants/dates.dart';
 import '../../domain/entities/search_result.dart';
 import '../../domain/repositories/search_repository.dart';
 import '../dto/search_result_dto.dart';
@@ -41,7 +42,14 @@ class MockSearchRepository implements SearchRepository {
     required DateTime dateTime,
   }) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    // TODO: implement filtering using params
-    return _data.map(_mapper.fromDto).toList();
+    final targetDate = Dates.ymd(dateTime);
+    return _data
+        .where((dto) =>
+            dto.from.toLowerCase().contains(from.toLowerCase()) &&
+            dto.to.toLowerCase().contains(to.toLowerCase()) &&
+            dto.seat.toLowerCase().contains(seat.toLowerCase()) &&
+            dto.date == targetDate)
+        .map(_mapper.fromDto)
+        .toList();
   }
 }

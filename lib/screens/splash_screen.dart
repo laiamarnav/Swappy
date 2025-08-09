@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/app_colors.dart';
+import '../constants/app_keys.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -19,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _decideNext() async {
     await Future.delayed(const Duration(milliseconds: 900));
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('auth_user_id');
+    final userId = prefs.getString(AppKeys.authUserId);
 
     if (userId != null) {
       Navigator.pushReplacementNamed(context, '/search');
@@ -31,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Color.fromARGB(255, 69, 128, 255),
+      backgroundColor: AppColors.primary,
       body: Center(
         child: Image(image: AssetImage('assets/logo.png'), height: 64),
       ),

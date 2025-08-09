@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/app_colors.dart';
+import '../constants/app_keys.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -26,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // TODO: autenticar de verdad. Por ahora, demo:
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_user_id', 'user_demo');
+    await prefs.setString(AppKeys.authUserId, 'user_demo');
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -57,8 +60,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF5078F2);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -78,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Text(
                 '¡Bienvenido de vuelta!',
                 style: TextStyle(
-                  color: primary,
+                  color: AppColors.primary,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   height: 1.2,
@@ -154,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: _submit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: primary,
+                            backgroundColor: AppColors.primary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -208,17 +209,15 @@ class _InputRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF5078F2);
-
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: primary.withOpacity(0.1),
+            color: AppColors.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(Icons.mail, color: primary), // icon real lo pinta ListTile
+          child: Icon(icon, color: AppColors.primary),
         ),
         const SizedBox(width: 12),
         Expanded(

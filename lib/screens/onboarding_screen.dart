@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/app_colors.dart';
+import '../constants/app_keys.dart';
+
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
 
@@ -11,8 +14,6 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final _controller = PageController();
   int _index = 0;
-
-  static const primary = Color(0xFF5078F2);
 
   final _slides = const [
     _SlideData(
@@ -45,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setBool('seenOnboarding', true);
 
-  final userId = prefs.getString('auth_user_id');
+  final userId = prefs.getString(AppKeys.authUserId);
   // Si venimos de registro, ya hay userId → ir a Search
   // Si alguien abre onboarding manual sin sesión → ir a Login
   if (!context.mounted) return;
@@ -104,7 +105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               child: Text(
                                 s.title,
                                 style: const TextStyle(
-                                  color: primary,
+                                  color: AppColors.primary,
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
                                   height: 1.15,
@@ -122,8 +123,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   shape: BoxShape.circle,
                                   gradient: LinearGradient(
                                     colors: [
-                                      primary.withOpacity(0.18),
-                                      primary.withOpacity(0.0),
+                                      AppColors.primary.withOpacity(0.18),
+                                      AppColors.primary.withOpacity(0.0),
                                     ],
                                     begin: Alignment.topRight,
                                     end: Alignment.bottomLeft,
@@ -181,7 +182,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Row(
                     children: List.generate(
                       _slides.length,
-                      (i) => _Dot(active: i == _index, color: primary),
+                      (i) => _Dot(active: i == _index, color: AppColors.primary),
                     ),
                   ),
                   const Spacer(),
@@ -191,7 +192,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: ElevatedButton(
                       onPressed: _next,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: primary,
+                        backgroundColor: AppColors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(26),
                         ),

@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../constants/app_colors.dart';
+
 class ReportProblemScreen extends StatefulWidget {
   const ReportProblemScreen({Key? key}) : super(key: key);
 
@@ -31,10 +33,10 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.blue, size: 20),
+            child: Icon(icon, color: AppColors.primary, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -160,7 +162,7 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
                   child: ElevatedButton(
                     onPressed: _submit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF5078F2),
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),

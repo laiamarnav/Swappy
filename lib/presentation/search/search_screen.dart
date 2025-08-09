@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '../../application/search/search_controller.dart' as search;
 import '../../application/core/async_state.dart';
+import '../../application/search/search_controller.dart' as search;
+import '../../constants/app_colors.dart';
+import '../../constants/dates.dart';
 import '../../domain/entities/search_result.dart';
 import '../../infrastructure/di/locator.dart';
 import '../widgets/destination_carousel.dart';
@@ -83,9 +84,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final state = controller.state;
     final bottomPadding = MediaQuery.of(context).padding.bottom + 16;
-    final hasSearched = controller.state.status == AsyncStatus.success;
-    final results = controller.state.data ?? <SearchResult>[];
+    final results = state.data ?? <SearchResult>[];
+    final hasSearched = state.status == AsyncStatus.success;
 
     return MainScaffold(
       currentIndex: 1,
@@ -94,7 +96,7 @@ class _SearchScreenState extends State<SearchScreen> {
         floatingActionButton: FloatingActionButton(
           heroTag: 'search',
           onPressed: _navigateCreate,
-          backgroundColor: Colors.blue,
+          backgroundColor: AppColors.primary,
           child: const Icon(Icons.add, color: Colors.white),
         ),
         body: Column(
@@ -113,7 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
-            if (!hasSearched)
+            if (state.status == AsyncStatus.idle)
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -172,8 +174,29 @@ class _SearchScreenState extends State<SearchScreen> {
                 onEdit: () => controller.state = const AsyncState.idle(),
               ),
             Expanded(
-              child: hasSearched
-                  ? SafeArea(
+              child: Builder(
+                builder: (context) {
+                  if (state.status == AsyncStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state.status == AsyncStatus.error) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Something went wrong'),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          onPressed: _submitSearch,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    );
+                  }
+                  if (state.status == AsyncStatus.success) {
+                    if (results.isEmpty) {
+                      return const Center(child: Text('No results found'));
+                    }
+                    return SafeArea(
                       top: false,
                       child: ListView.builder(
                         padding: EdgeInsets.only(
@@ -226,10 +249,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
-                                        Text(DateFormat('yyyy-MM-dd').format(r.dateTime),
+                                        Text(Dates.ymd(r.dateTime),
                                             style: const TextStyle(
                                                 color: Colors.grey, fontSize: 12)),
-                                        Text(DateFormat('HH:mm').format(r.dateTime),
+                                        Text(Dates.time.format(r.dateTime),
                                             style: const TextStyle(
                                                 color: Colors.grey, fontSize: 12)),
                                       ],
@@ -252,17 +275,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                         'from': r.from,
                                         'to': r.to,
                                         'seat': r.seat,
-                                        'date': DateFormat('yyyy-MM-dd')
-                                            .format(r.dateTime),
-                                        'time': DateFormat('HH:mm')
-                                            .format(r.dateTime),
+                                        'date': Dates.ymd(r.dateTime),
+                                        'time': Dates.time.format(r.dateTime),
                                       }),
                                       icon: const Icon(Icons.event_seat),
                                       label: const Text('Solicitar asiento'),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
-                                            Colors.blue.withOpacity(0.1),
-                                        foregroundColor: Colors.blue,
+                                            AppColors.primary.withOpacity(0.1),
+                                        foregroundColor: AppColors.primary,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -277,28 +298,31 @@ class _SearchScreenState extends State<SearchScreen> {
                           );
                         },
                       ),
-                    )
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Column(
-                        children: [
-                          SearchForm(
-                            formKey: _formKey,
-                            fromController: fromController,
-                            toController: toController,
-                            seatController: seatController,
-                            selectedDateTime: selectedDateTime,
-                            onPickDateTime: _pickDateTime,
-                            onSubmit: _submitSearch,
-                          ),
-                          const SizedBox(height: 8),
-                          DestinationCarousel(
-                              screenWidth: MediaQuery.of(context).size.width),
-                          const SizedBox(height: 24),
-                        ],
-                      ),
+                    );
+                  }
+                  return SingleChildScrollView(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Column(
+                      children: [
+                        SearchForm(
+                          formKey: _formKey,
+                          fromController: fromController,
+                          toController: toController,
+                          seatController: seatController,
+                          selectedDateTime: selectedDateTime,
+                          onPickDateTime: _pickDateTime,
+                          onSubmit: _submitSearch,
+                        ),
+                        const SizedBox(height: 8),
+                        DestinationCarousel(
+                            screenWidth: MediaQuery.of(context).size.width),
+                        const SizedBox(height: 24),
+                      ],
                     ),
+                  );
+                },
+              ),
             ),
           ],
         ),
