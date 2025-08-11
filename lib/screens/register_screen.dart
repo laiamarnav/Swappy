@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../infrastructure/di/locator.dart';
+import '../infrastructure/auth/auth_service.dart';
 
 import '../constants/app_colors.dart';
-import '../constants/app_keys.dart';
 import '../transitions.dart'; // Custom transitions
 import 'onboarding_screen.dart'; // Navigate after register
 
@@ -21,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirm  = TextEditingController();
   bool _obscure = true;
   bool _acceptTerms = false;
+  bool _loading = false;
 
   @override
   void dispose() {
@@ -40,15 +41,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return;
   }
 
-  // Simula registro OK → guarda sesión
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(AppKeys.authUserId, 'user_demo');
-
-  // Ve al Onboarding post-registro con animación scale + fade
-  if (!mounted) return;
-  Navigator.of(context).pushReplacement(
-    ScaleFadePageRoute(page: const OnboardingScreen()),
-  );
+  setState(() => _loading = true);
+  final auth = locator<AuthService>();
+  try {
+    await auth.signUpWithEmail(_email.text.trim(), _password.text);
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      ScaleFadePageRoute(page: const OnboardingScreen()),
+    );
+  } on AuthException catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(e.message)),
+    );
+  } finally {
+    if (mounted) setState(() => _loading = false);
+  }
   }
 
   @override
@@ -178,17 +186,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: _submit,
+                          onPressed: _loading ? null : _submit,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: const Text(
-                            'Crear cuenta',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
+                          child: _loading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Crear cuenta',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                ),
                         ),
                       ),
                     ],

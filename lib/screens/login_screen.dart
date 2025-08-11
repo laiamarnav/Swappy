@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../infrastructure/di/locator.dart';
+import '../infrastructure/auth/auth_service.dart';
 
 import '../constants/app_colors.dart';
-import '../constants/app_keys.dart';
 import '../presentation/widgets/tap_scale.dart';
-import '../presentation/search/search_screen.dart'; // Import for navigation
 import '../transitions.dart'; // Custom transitions
+import 'auth_gate.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _email    = TextEditingController();
   final _password = TextEditingController();
   bool _obscure = true;
+  bool _loading = false;
 
   @override
   void dispose() {
@@ -30,19 +31,26 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    // TODO: autenticar de verdad. Por ahora, demo:
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(AppKeys.authUserId, 'user_demo');
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Sesión iniciada')),
-    );
-    // Ir a la home principal con transición fade
-    Navigator.of(context).pushAndRemoveUntil(
-      FadePageRoute(page: const SearchScreen()),
-      (_) => false,
-    );
+    setState(() => _loading = true);
+    final auth = locator<AuthService>();
+    try {
+      await auth.signInWithEmail(_email.text.trim(), _password.text);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sesión iniciada')),
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        FadePageRoute(page: const AuthGate()),
+        (_) => false,
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   void _forgotPassword() {
@@ -163,18 +171,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 50,
                         child: TapScale(
                           child: ElevatedButton(
-                            onPressed: _submit,
+                            onPressed: _loading ? null : _submit,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            child: const Text(
-                              'Entrar',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),
+                            child: _loading
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Entrar',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
+                                  ),
                           ),
                         ),
                       ),
