@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_colors.dart';
-import '../constants/app_keys.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -46,11 +45,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setBool('seenOnboarding', true);
 
-  final userId = prefs.getString(AppKeys.authUserId);
-  // Si venimos de registro, ya hay userId → ir a Search
-  // Si alguien abre onboarding manual sin sesión → ir a Login
   if (!context.mounted) return;
-  Navigator.pushReplacementNamed(context, userId != null ? '/search' : '/login');
+  Navigator.pushReplacementNamed(context, '/');
   }
 
   void _next() {
