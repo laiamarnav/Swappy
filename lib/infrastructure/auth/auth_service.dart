@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart'; // para debugPrint
 
 abstract class AuthService {
   Future<UserCredential> signInWithEmail(String email, String password);
@@ -9,11 +10,12 @@ abstract class AuthService {
 }
 
 class AuthException implements Exception {
+  final String code;     // <-- nuevo
   final String message;
-  AuthException(this.message);
+  AuthException(this.message, {this.code = 'unknown'});
 
   @override
-  String toString() => message;
+  String toString() => '$code: $message';
 }
 
 class FirebaseAuthService implements AuthService {
@@ -29,11 +31,12 @@ class FirebaseAuthService implements AuthService {
   Future<UserCredential> signInWithEmail(String email, String password) async {
     try {
       return await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: email.trim(),            // <-- trim
+        password: password.trim(),      // <-- trim
       );
     } on FirebaseAuthException catch (e) {
-      throw AuthException(_mapError(e.code));
+      debugPrint('SIGNIN ERROR code=${e.code} message=${e.message}');
+      throw AuthException(_mapError(e.code), code: e.code); // <-- conserva code
     }
   }
 
@@ -41,11 +44,12 @@ class FirebaseAuthService implements AuthService {
   Future<UserCredential> signUpWithEmail(String email, String password) async {
     try {
       return await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: email.trim(),            // <-- trim
+        password: password.trim(),      // <-- trim
       );
     } on FirebaseAuthException catch (e) {
-      throw AuthException(_mapError(e.code));
+      debugPrint('SIGNUP ERROR code=${e.code} message=${e.message}');
+      throw AuthException(_mapError(e.code), code: e.code); // <-- conserva code
     }
   }
 
@@ -63,6 +67,12 @@ class FirebaseAuthService implements AuthService {
       case 'user-not-found':
       case 'wrong-password':
         return 'Invalid credentials';
+      case 'operation-not-allowed':
+        return 'This sign-in method is not enabled in Firebase';
+      case 'too-many-requests':
+        return 'Too many attempts. Please try again later';
+      case 'network-request-failed':
+        return 'Network error. Check your connection';
       default:
         return 'An error occurred, please try again';
     }

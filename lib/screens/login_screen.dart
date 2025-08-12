@@ -15,8 +15,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey  = GlobalKey<FormState>();
-  final _email    = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _email = TextEditingController();
   final _password = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
@@ -33,8 +33,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _loading = true);
     final auth = locator<AuthService>();
+
     try {
-      await auth.signInWithEmail(_email.text.trim(), _password.text);
+      await auth.signInWithEmail(_email.text.trim(), _password.text.trim());
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sesión iniciada')),
@@ -44,9 +46,17 @@ class _LoginScreenState extends State<LoginScreen> {
         (_) => false,
       );
     } on AuthException catch (e) {
+      // Mostramos también el código para depurar
+      debugPrint('LOGIN ERROR => ${e.code}: ${e.message}');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
+        SnackBar(content: Text('${e.message} (${e.code})')),
+      );
+    } catch (e, st) {
+      debugPrint('LOGIN UNEXPECTED ERROR => $e\n$st');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ha ocurrido un error inesperado')),
       );
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -152,10 +162,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             _obscure ? Icons.visibility : Icons.visibility_off,
                             color: Colors.grey,
                           ),
-                          onPressed: () => setState(() => _obscure = !_obscure),
+                          onPressed: () =>
+                              setState(() => _obscure = !_obscure),
                         ),
                         validator: (v) =>
-                            (v == null || v.length < 6) ? 'Mínimo 6 caracteres' : null,
+                            (v == null || v.length < 6)
+                                ? 'Mínimo 6 caracteres'
+                                : null,
                       ),
                       const SizedBox(height: 12),
                       Align(
@@ -263,8 +276,7 @@ class _InputRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               suffixIcon: suffix,
             ),
           ),

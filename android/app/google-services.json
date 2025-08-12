@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "474776385675",
+    "project_id": "swivo-d8bfa",
+    "storage_bucket": "swivo-d8bfa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474776385675:android:65e2196a922cab482d7c8e",
+        "android_client_info": {
+          "package_name": "com.swivo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB76nQerj35VawN1t09-rvugXJORMNkYZk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

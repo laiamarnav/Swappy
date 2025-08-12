@@ -3,7 +3,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:swappy/core/responsive/responsive.dart';
+import 'package:swappy/infrastructure/auth/auth_service.dart';
+import 'package:swappy/infrastructure/di/locator.dart';
 import 'package:swappy/presentation/widgets/adaptive_scaffold.dart';
+import 'package:swappy/screens/auth_gate.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -170,6 +173,11 @@ class ProfileScreen extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.popUntil(context, (route) => route.isFirst);
+              locator<AuthService>().signOut();
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const AuthGate()),
+                    (_) => false,
+                  );
             },
             child: const Text('Salir'),
           ),

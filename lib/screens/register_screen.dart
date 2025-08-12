@@ -14,11 +14,11 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _formKey  = GlobalKey<FormState>();
-  final _name     = TextEditingController();
-  final _email    = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _email = TextEditingController();
   final _password = TextEditingController();
-  final _confirm  = TextEditingController();
+  final _confirm = TextEditingController();
   bool _obscure = true;
   bool _acceptTerms = false;
   bool _loading = false;
@@ -33,30 +33,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _submit() async {
-  if (!(_formKey.currentState?.validate() ?? false)) return;
-  if (!_acceptTerms) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Debes aceptar los términos')),
-    );
-    return;
-  }
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
-  setState(() => _loading = true);
-  final auth = locator<AuthService>();
-  try {
-    await auth.signUpWithEmail(_email.text.trim(), _password.text);
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      ScaleFadePageRoute(page: const OnboardingScreen()),
-    );
-  } on AuthException catch (e) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.message)),
-    );
-  } finally {
-    if (mounted) setState(() => _loading = false);
-  }
+    if (!_acceptTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes aceptar los términos')),
+      );
+      return;
+    }
+
+    final email = _email.text.trim();
+    final pass = _password.text.trim();
+    final confirm = _confirm.text.trim();
+
+    if (pass != confirm) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Las contraseñas no coinciden')),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+    final auth = locator<AuthService>();
+
+    try {
+      await auth.signUpWithEmail(email, pass);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cuenta creada')),
+      );
+      Navigator.of(context).pushReplacement(
+        ScaleFadePageRoute(page: const OnboardingScreen()),
+      );
+    } on AuthException catch (e) {
+      // Mostramos el código y lo logueamos para diagnóstico rápido
+      debugPrint('REGISTER ERROR => ${e.code}: ${e.message}');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${e.message} (${e.code})')),
+      );
+    } catch (e, st) {
+      debugPrint('REGISTER UNEXPECTED ERROR => $e\n$st');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ha ocurrido un error inesperado')),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -123,7 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hint: 'Nombre',
                         controller: _name,
                         validator: (v) =>
-                            (v == null || v.isEmpty) ? 'Requerido' : null,
+                            (v == null || v.trim().isEmpty) ? 'Requerido' : null,
                       ),
                       const SizedBox(height: 12),
                       _InputRow(
@@ -132,8 +157,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: _email,
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Requerido';
-                          if (!v.contains('@')) return 'Correo inválido';
+                          final val = v?.trim() ?? '';
+                          if (val.isEmpty) return 'Requerido';
+                          if (!val.contains('@')) return 'Correo inválido';
                           return null;
                         },
                       ),
@@ -151,7 +177,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () => setState(() => _obscure = !_obscure),
                         ),
                         validator: (v) =>
-                            (v == null || v.length < 6) ? 'Mínimo 6 caracteres' : null,
+                            (v == null || v.trim().length < 6)
+                                ? 'Mínimo 6 caracteres'
+                                : null,
                       ),
                       const SizedBox(height: 12),
                       _InputRow(
@@ -160,7 +188,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: _confirm,
                         obscureText: _obscure,
                         validator: (v) =>
-                            v != _password.text ? 'Las contraseñas no coinciden' : null,
+                            (v == null || v.trim() != _password.text.trim())
+                                ? 'Las contraseñas no coinciden'
+                                : null,
                       ),
                       const SizedBox(height: 12),
 
@@ -170,7 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             value: _acceptTerms,
                             activeColor: AppColors.primary,
                             onChanged: (v) =>
-                                setState(() => _acceptTerms = v ?? false),
+                                setState(() => _acceptTerms = (v ?? false)),
                           ),
                           const Expanded(
                             child: Text(
@@ -218,7 +248,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SizedBox(height: 16),
             Center(
               child: TextButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/login'),
                 child: const Text('¿Ya tienes cuenta? Inicia sesión'),
               ),
             ),
