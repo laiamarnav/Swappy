@@ -99,7 +99,6 @@ class _SearchScreenState extends State<SearchScreen> {
     return Consumer<search.SearchController>(
       builder: (context, controller, _) {
         final state = controller.state;
-        final results = state.data ?? <SearchResult>[];
         final hasSearched = state.status == AsyncStatus.success;
 
         return AdaptiveScaffold(
@@ -233,36 +232,41 @@ class _SearchScreenState extends State<SearchScreen> {
                     );
                   }
                   if (state.status == AsyncStatus.success) {
-                    if (results.isEmpty) {
-                      return const EmptyState(
-                        icon: Icons.search_off,
-                        title: 'No results found',
-                        subtitle: 'Try a different search',
-                      );
-                    }
                     return SafeArea(
                       top: false,
-                      child: ListView(
-                        padding: EdgeInsets.only(
-                          left: spaceM,
-                          right: spaceM,
-                          top: spaceS,
-                          bottom: bottomPadding,
-                        ),
-                        children: [
-                          SearchResultsList(
-                            results: results,
-                            onRequestSeat: (r) =>
-                                showSeatRequestDialog(context, {
-                              'airline': r.airline,
-                              'from': r.from,
-                              'to': r.to,
-                              'seat': r.seat,
-                              'date': Dates.ymd(r.dateTime),
-                              'time': Dates.time.format(r.dateTime),
-                            }),
-                          ),
-                        ],
+                      child: Selector<search.SearchController, List<SearchResult>>(
+                        selector: (_, c) => c.state.data ?? <SearchResult>[],
+                        builder: (context, results, _) {
+                          if (results.isEmpty) {
+                            return const EmptyState(
+                              icon: Icons.search_off,
+                              title: 'No results found',
+                              subtitle: 'Try a different search',
+                            );
+                          }
+                          return ListView(
+                            padding: EdgeInsets.only(
+                              left: spaceM,
+                              right: spaceM,
+                              top: spaceS,
+                              bottom: bottomPadding,
+                            ),
+                            children: [
+                              SearchResultsList(
+                                results: results,
+                                onRequestSeat: (r) =>
+                                    showSeatRequestDialog(context, {
+                                  'airline': r.airline,
+                                  'from': r.from,
+                                  'to': r.to,
+                                  'seat': r.seat,
+                                  'date': Dates.ymd(r.dateTime),
+                                  'time': Dates.time.format(r.dateTime),
+                                }),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     );
                   }

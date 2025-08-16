@@ -15,23 +15,24 @@ class SearchResultsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: results.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final result = results[index];
 
         return Container(
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 249, 254, 255),
-            borderRadius: BorderRadius.circular(16),
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 249, 254, 255),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 10,
-                offset: const Offset(0, 4),
+                offset: Offset(0, 4),
               ),
             ],
           ),
