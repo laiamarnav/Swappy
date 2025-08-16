@@ -14,10 +14,11 @@ class AppState extends ChangeNotifier {                  // ← ahora extiende C
 
   // Lista de todos los anuncios (listings)
   final List<Listing> listings = [
+    // Publicado por el usuario actual
     Listing(
       id: 'l1',
-      userId: 'user_2',
-      userAvatarUrl: 'https://i.pravatar.cc/150?img=3',
+      userId: 'user_1',
+      userAvatarUrl: 'https://i.pravatar.cc/150?img=1',
       origin: 'Barcelona, Spain',
       destination: 'Tivat, Montenegro',
       airline: 'Vueling',
@@ -25,32 +26,35 @@ class AppState extends ChangeNotifier {                  // ← ahora extiende C
       seat: '13D',
       date: DateTime(2025, 9, 30, 10, 15),
     ),
-       Listing(
-      id: 'l1',
+    // Publicado por otro usuario
+    Listing(
+      id: 'l2',
       userId: 'user_2',
-      userAvatarUrl: 'https://i.pravatar.cc/150?img=3',
-      origin: 'Barcelona, Spain',
-      destination: 'Tivat, Montenegro',
-      airline: 'Vueling',
-      flightNumber: 'VY3001',
-      seat: '13D',
-      date: DateTime(2025, 9, 30, 10, 15),
+      userAvatarUrl: 'https://i.pravatar.cc/150?img=2',
+      origin: 'Berlin, Germany',
+      destination: 'Paris, France',
+      airline: 'easyJet',
+      flightNumber: 'EJ1234',
+      seat: '7A',
+      date: DateTime(2025, 10, 5, 8, 30),
     ),
-      Listing(
-      id: 'l1',
-      userId: 'user_2',
+    // Un tercer usuario
+    Listing(
+      id: 'l3',
+      userId: 'user_3',
       userAvatarUrl: 'https://i.pravatar.cc/150?img=3',
-      origin: 'Barcelona, Spain',
-      destination: 'Tivat, Montenegro',
-      airline: 'Vueling',
-      flightNumber: 'VY3001',
-      seat: '13D',
-      date: DateTime(2025, 9, 30, 10, 15),
+      origin: 'New York, USA',
+      destination: 'Los Angeles, USA',
+      airline: 'Delta',
+      flightNumber: 'DL567',
+      seat: '21C',
+      date: DateTime(2025, 11, 12, 14, 45),
     ),
   ];
 
   // Lista interna de intercambios/peticiones
   final List<ExchangeRequest> _requests = [
+    // Solicitudes recibidas por el usuario actual
     ExchangeRequest(
       id: 'r1',
       listingId: 'l1',
@@ -59,31 +63,25 @@ class AppState extends ChangeNotifier {                  // ← ahora extiende C
       status: ExchangeRequestStatus.pending,
     ),
     ExchangeRequest(
-      id: 'r1',
+      id: 'r2',
       listingId: 'l1',
-      fromUserId: 'user_2',
+      fromUserId: 'user_3',
       toUserId: 'user_1',
       status: ExchangeRequestStatus.pending,
     ),
+    // Solicitudes enviadas por el usuario actual
     ExchangeRequest(
-      id: 'r1',
-      listingId: 'l1',
-      fromUserId: 'user_2',
-      toUserId: 'user_1',
+      id: 'r3',
+      listingId: 'l2',
+      fromUserId: 'user_1',
+      toUserId: 'user_2',
       status: ExchangeRequestStatus.pending,
     ),
     ExchangeRequest(
-      id: 'r1',
-      listingId: 'l1',
-      fromUserId: 'user_2',
-      toUserId: 'user_1',
-      status: ExchangeRequestStatus.pending,
-    ),
-    ExchangeRequest(
-      id: 'r1',
-      listingId: 'l1',
-      fromUserId: 'user_2',
-      toUserId: 'user_1',
+      id: 'r4',
+      listingId: 'l3',
+      fromUserId: 'user_1',
+      toUserId: 'user_3',
       status: ExchangeRequestStatus.pending,
     ),
   ];
