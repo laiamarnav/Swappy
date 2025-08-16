@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:swappy/application/search/search_controller.dart' as search;
+import 'package:swappy/infrastructure/di/locator.dart';
 import 'package:swappy/presentation/about/about_app_screen.dart';
 import 'package:swappy/presentation/listing/create_listing_screen.dart';
 import 'package:swappy/presentation/profile/edit_profile_screen.dart';
@@ -19,7 +22,10 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/login':   (context) => const LoginScreen(),
   '/register':(context) => const RegisterScreen(),
   '/notifications': (_) => const NotificationsScreen(),
-  '/search': (_)        => const SearchScreen(),
+  '/search': (_) => ChangeNotifierProvider(
+        create: (_) => search.SearchController(locator()),
+        child: const SearchScreen(),
+      ),
   '/profile': (_)       => const ProfileScreen(),
   '/create': (_)        => const CreateListingScreen(),
   '/edit_profile': (_) => const EditProfileScreen(),
