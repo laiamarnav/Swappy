@@ -102,72 +102,65 @@ class SearchForm extends StatelessWidget {
     String label,
     TextEditingController controller,
   ) {
-    return Row(
-      children: [
-        _iconBox(icon),
-        const SizedBox(width: spaceS + spaceXS),
-        Expanded(
-          child: TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: label,
-              filled: true,
-              fillColor: Colors.grey[100],
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: spaceM,
-                vertical: spaceS + spaceXS,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(spaceM),
-                borderSide: BorderSide.none,
-              ),
-            ),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Required' : null,
-          ),
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: Colors.grey[100],
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: spaceM,
+          vertical: spaceS + spaceXS,
         ),
-      ],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(spaceM),
+          borderSide: BorderSide.none,
+        ),
+        prefixIcon: Container(
+          padding: const EdgeInsets.all(spaceS + spaceXS),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(spaceS + spaceXS),
+          ),
+          child: Icon(icon, color: AppColors.primary),
+        ),
+        prefixIconConstraints:
+            const BoxConstraints(minWidth: 0, minHeight: 0),
+      ),
+      validator: (value) =>
+          value == null || value.isEmpty ? 'Required' : null,
     );
   }
 
   Widget _dateTimeTile(IconData icon, String label, String value) {
-    return Row(
-      children: [
-        _iconBox(icon),
-        const SizedBox(width: spaceS + spaceXS),
-        Expanded(
-          child: GestureDetector(
-            onTap: onPickDateTime,
-            child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: label,
-                filled: true,
-                fillColor: Colors.grey[100],
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: spaceM,
-                  vertical: spaceS + spaceXS,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(spaceM),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              child: Text(value),
-            ),
+    return GestureDetector(
+      onTap: onPickDateTime,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          filled: true,
+          fillColor: Colors.grey[100],
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: spaceM,
+            vertical: spaceS + spaceXS,
           ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(spaceM),
+            borderSide: BorderSide.none,
+          ),
+          prefixIcon: Container(
+            padding: const EdgeInsets.all(spaceS + spaceXS),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(spaceS + spaceXS),
+            ),
+            child: Icon(icon, color: AppColors.primary),
+          ),
+          prefixIconConstraints:
+              const BoxConstraints(minWidth: 0, minHeight: 0),
         ),
-      ],
-    );
-  }
-
-  Widget _iconBox(IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(spaceS + spaceXS),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(spaceS + spaceXS),
+        child: Text(value),
       ),
-      child: Icon(icon, color: AppColors.primary),
     );
   }
 }
