@@ -14,6 +14,7 @@ import '../widgets/adaptive_scaffold.dart';
 import '../widgets/search_form.dart';
 import '../widgets/search_summary.dart';
 import '../widgets/seat_request_dialog.dart';
+import '../../widgets/search_results_list.dart';
 import '../../ui/spacing.dart';
 import '../../ui/max_width.dart';
 import '../../ui/states/loading_state.dart';
@@ -233,124 +234,27 @@ class _SearchScreenState extends State<SearchScreen> {
                     }
                     return SafeArea(
                       top: false,
-                      child: ListView.builder(
+                      child: ListView(
                         padding: EdgeInsets.only(
                           left: spaceM,
                           right: spaceM,
                           top: spaceS,
                           bottom: bottomPadding,
                         ),
-                        itemCount: results.length,
-                        itemBuilder: (context, i) {
-                          final r = results[i];
-                          return Container(
-                            margin: const EdgeInsets.only(
-                              bottom: spaceS + spaceXS,
-                            ),
-                            padding: const EdgeInsets.all(spaceM),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(spaceM),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  spreadRadius: 2,
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.flight_takeoff,
-                                          color: Color.fromARGB(
-                                            255,
-                                            79,
-                                            170,
-                                            255,
-                                          ),
-                                        ),
-                                        const SizedBox(width: spaceS),
-                                        Text(
-                                          '${r.from} → ${r.to}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          Dates.ymd(r.dateTime),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                color: Colors.grey,
-                                                fontSize: 12,
-                                              ),
-                                        ),
-                                        Text(
-                                          Dates.time.format(r.dateTime),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                color: Colors.grey,
-                                                fontSize: 12,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: spaceS),
-                                Text(
-                                  r.airline,
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(color: Colors.grey),
-                                ),
-                                const Divider(height: spaceM + spaceS),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Seat: ${r.seat}'),
-                                    ElevatedButton.icon(
-                                      onPressed: () =>
-                                          showSeatRequestDialog(context, {
-                                            'airline': r.airline,
-                                            'from': r.from,
-                                            'to': r.to,
-                                            'seat': r.seat,
-                                            'date': Dates.ymd(r.dateTime),
-                                            'time': Dates.time.format(
-                                              r.dateTime,
-                                            ),
-                                          }),
-                                      icon: const Icon(Icons.event_seat),
-                                      label: const Text('Solicitar asiento'),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                        children: [
+                          SearchResultsList(
+                            results: results,
+                            onRequestSeat: (r) =>
+                                showSeatRequestDialog(context, {
+                              'airline': r.airline,
+                              'from': r.from,
+                              'to': r.to,
+                              'seat': r.seat,
+                              'date': Dates.ymd(r.dateTime),
+                              'time': Dates.time.format(r.dateTime),
+                            }),
+                          ),
+                        ],
                       ),
                     );
                   }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../constants/dates.dart';
+import '../domain/entities/search_result.dart';
+
 class SearchResultsList extends StatelessWidget {
-  final List<Map<String, String>> results;
-  final Function(Map<String, String>) onRequestSeat;
+  final List<SearchResult> results;
+  final void Function(SearchResult) onRequestSeat;
 
   const SearchResultsList({
     super.key,
@@ -28,7 +31,7 @@ class SearchResultsList extends StatelessWidget {
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 10,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -47,14 +50,14 @@ class SearchResultsList extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${result['from']} → ${result['to']}",
+                            "${result.from} → ${result.to}",
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            result['airline'] ?? '',
+                            result.airline,
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.black54,
@@ -67,11 +70,11 @@ class SearchResultsList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          result['date'] ?? '',
+                          Dates.ymd(result.dateTime),
                           style: const TextStyle(color: Colors.black54),
                         ),
                         Text(
-                          result['time'] ?? '--:--',
+                          Dates.time.format(result.dateTime),
                           style: const TextStyle(color: Colors.black54),
                         ),
                       ],
@@ -83,7 +86,7 @@ class SearchResultsList extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Seat: ${result['seat']}",
+                      "Seat: ${result.seat}",
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                     ElevatedButton.icon(
