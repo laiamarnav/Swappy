@@ -52,62 +52,69 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
-  Widget _inputTile(String label, IconData icon, TextEditingController c) {
-    return TextFormField(
-      controller: c,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: Colors.grey[100],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        prefixIcon: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: Colors.blue),
-        ),
-        prefixIconConstraints:
-            const BoxConstraints(minWidth: 0, minHeight: 0),
+  Widget _iconBox(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
       ),
-      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+      child: Icon(icon, color: Colors.blue),
+    );
+  }
+
+  Widget _inputTile(String label, IconData icon, TextEditingController c) {
+    return Row(
+      children: [
+        _iconBox(icon),
+        const SizedBox(width: 12),
+        Expanded(
+          child: TextFormField(
+            controller: c,
+            decoration: InputDecoration(
+              labelText: label,
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _dateTimeTile(
       String label, IconData icon, String value, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          filled: true,
-          fillColor: Colors.grey[100],
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          prefixIcon: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+    return Row(
+      children: [
+        _iconBox(icon),
+        const SizedBox(width: 12),
+        Expanded(
+          child: GestureDetector(
+            onTap: onTap,
+            child: InputDecorator(
+              decoration: InputDecoration(
+                labelText: label,
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+              child: Text(value),
             ),
-            child: Icon(icon, color: Colors.blue),
           ),
-          prefixIconConstraints:
-              const BoxConstraints(minWidth: 0, minHeight: 0),
         ),
-        child: Text(value),
-      ),
+      ],
     );
   }
 
