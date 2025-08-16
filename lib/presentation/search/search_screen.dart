@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../../application/core/async_state.dart';
@@ -220,13 +221,13 @@ class _SearchScreenState extends State<SearchScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Something went wrong',
+                          AppLocalizations.of(context)!.somethingWentWrong,
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         const SizedBox(height: spaceS + spaceXS),
                         ElevatedButton(
                           onPressed: _submitSearch,
-                          child: const Text('Retry'),
+                          child: Text(AppLocalizations.of(context)!.retry),
                         ),
                       ],
                     );
@@ -238,10 +239,12 @@ class _SearchScreenState extends State<SearchScreen> {
                         selector: (_, c) => c.state.data ?? <SearchResult>[],
                         builder: (context, results, _) {
                           if (results.isEmpty) {
-                            return const EmptyState(
+                            return EmptyState(
                               icon: Icons.search_off,
-                              title: 'No results found',
-                              subtitle: 'Try a different search',
+                              title:
+                                  AppLocalizations.of(context)!.noResultsFound,
+                              subtitle: AppLocalizations.of(context)!
+                                  .tryDifferentSearch,
                             );
                           }
                           return ListView(
