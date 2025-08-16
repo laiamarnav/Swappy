@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../application/core/async_state.dart';
 import '../../application/search/search_controller.dart' as search;
@@ -32,19 +33,8 @@ class _SearchScreenState extends State<SearchScreen> {
   final seatController = TextEditingController();
   DateTime? selectedDateTime;
 
-  late final search.SearchController controller = search.SearchController(
-    locator(),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    controller.addListener(() => setState(() {}));
-  }
-
   @override
   void dispose() {
-    controller.dispose();
     fromController.dispose();
     toController.dispose();
     seatController.dispose();
@@ -81,12 +71,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _submitSearch() {
     if (_formKey.currentState!.validate() && selectedDateTime != null) {
-      controller.search(
-        from: fromController.text,
-        to: toController.text,
-        seat: seatController.text,
-        dateTime: selectedDateTime!,
-      );
+      context.read<search.SearchController>().search(
+            from: fromController.text,
+            to: toController.text,
+            seat: seatController.text,
+            dateTime: selectedDateTime!,
+          );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
@@ -98,30 +88,33 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = controller.state;
     final bottomPadding = MediaQuery.of(context).padding.bottom + 16;
-    final results = state.data ?? <SearchResult>[];
-    final hasSearched = state.status == AsyncStatus.success;
 
     void onSelect(int i) {
       if (i == 1) return;
       Navigator.pushReplacementNamed(context, _routes[i]);
     }
 
-    return AdaptiveScaffold(
-      currentIndex: 1,
-      onSelect: onSelect,
-      fab: FloatingActionButton(
-        heroTag: 'search',
-        onPressed: _navigateCreate,
-        tooltip: 'Create listing',
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      body: MaxWidth(
-        child: Column(
-          children: [
-            AppBar(
+    return Consumer<search.SearchController>(
+      builder: (context, controller, _) {
+        final state = controller.state;
+        final results = state.data ?? <SearchResult>[];
+        final hasSearched = state.status == AsyncStatus.success;
+
+        return AdaptiveScaffold(
+          currentIndex: 1,
+          onSelect: onSelect,
+          fab: FloatingActionButton(
+            heroTag: 'search',
+            onPressed: _navigateCreate,
+            tooltip: 'Create listing',
+            backgroundColor: AppColors.primary,
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+          body: MaxWidth(
+            child: Column(
+              children: [
+                AppBar(
               backgroundColor: Colors.white,
               elevation: 0,
               centerTitle: true,
@@ -425,13 +418,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       );
                     },
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      );
+      },
     );
   }
 }

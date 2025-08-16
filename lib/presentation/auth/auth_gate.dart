@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
+import '../../application/search/search_controller.dart' as search;
 import '../../infrastructure/di/locator.dart';
 import '../../infrastructure/auth/auth_service.dart';
 import '../search/search_screen.dart';
@@ -21,7 +23,10 @@ class AuthGate extends StatelessWidget {
           );
         }
         if (snapshot.hasData) {
-          return const SearchScreen();
+          return ChangeNotifierProvider(
+            create: (_) => search.SearchController(locator()),
+            child: const SearchScreen(),
+          );
         }
         return const LoginScreen();
       },
