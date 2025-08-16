@@ -1,9 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:swappy/application/app_state_controller.dart';
 import 'package:swappy/models/exchange_request.dart';
+import 'package:swappy/infrastructure/di/locator.dart';
 
 void main() {
-  final appState = AppStateController();
+  late AppStateController appState;
+
+  setUpAll(() {
+    setupLocator();
+    appState = locator<AppStateController>();
+  });
 
   test('getReceivedRequests returns unique pending requests for current user', () {
     final received = appState.getReceivedRequests();

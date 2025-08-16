@@ -9,7 +9,7 @@ void main() {
   });
 
   test('search transitions to success', () async {
-    final controller = SearchController(locator());
+    final controller = locator<SearchController>();
     await controller.search(
       from: 'a',
       to: 'b',

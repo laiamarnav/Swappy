@@ -13,8 +13,8 @@ void main() async {
   );
   setupLocator();
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AppStateController(),
+    ChangeNotifierProvider<AppStateController>.value(
+      value: locator<AppStateController>(),
       child: const MyApp(),
     ),
   );
