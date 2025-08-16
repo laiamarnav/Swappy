@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_colors.dart';
 import '../transitions.dart';
 
 ThemeData appTheme() {
-  const seed = Color(0xFF3F6FFF);
+  const seed = AppColors.primary;
   final base = ThemeData(
     useMaterial3: true,
-    colorSchemeSeed: seed,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: seed,
+      background: Colors.white,
+      surface: Colors.white,
+    ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.android: FadeTransitionsBuilder(),

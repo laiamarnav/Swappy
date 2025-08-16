@@ -110,21 +110,24 @@ class _SearchScreenState extends State<SearchScreen> {
             onPressed: _navigateCreate,
             tooltip: 'Create listing',
             backgroundColor: AppColors.primary,
-            child: const Icon(Icons.add, color: Colors.white),
+            child: Icon(
+              Icons.add,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
           body: MaxWidth(
             child: Column(
               children: [
                 AppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.background,
               elevation: 0,
               centerTitle: true,
               automaticallyImplyLeading: false,
               title: Text(
                 'Swappy',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(color: Colors.grey),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
               ),
               actions: [
                 IconButton(
@@ -135,7 +138,10 @@ class _SearchScreenState extends State<SearchScreen> {
                       (_) => false,
                     );
                   },
-                  icon: const Icon(Icons.logout, color: Colors.grey),
+                  icon: Icon(
+                    Icons.logout,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
                   tooltip: 'Sign out',
                 ),
               ],
@@ -150,12 +156,12 @@ class _SearchScreenState extends State<SearchScreen> {
                       horizontal: spaceL,
                       vertical: spaceM + spaceXS,
                     ),
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.background,
                     child: Text(
                       "Where's your\nnext destination",
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(
-                            color: const Color.fromARGB(255, 79, 170, 255),
+                            color: AppColors.primary,
                             height: 1.1,
                           ),
                     ),
@@ -189,8 +195,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Text(
                   'Search your next trip',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: const Color.fromARGB(255, 94, 94, 94),
-                  ),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurfaceVariant,
+                      ),
                 ),
               ),
             ),
