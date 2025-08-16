@@ -34,8 +34,11 @@ ThemeData appTheme() {
   return base.copyWith(
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
+        backgroundColor: seed,        // 👈 usa el color primario de tu app
+        foregroundColor: Colors.white, // 👈 color del texto/iconos 
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(

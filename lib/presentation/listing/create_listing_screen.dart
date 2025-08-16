@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:swappy/ui/spacing.dart';
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({Key? key}) : super(key: key);
@@ -71,12 +72,21 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         Expanded(
           child: TextFormField(
             controller: c,
+            
             decoration: InputDecoration(
               labelText: label,
               filled: true,
               fillColor: Colors.grey[100],
+              enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(spaceM),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(spaceM),
+              borderSide: BorderSide.none,
+            ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(spaceM),
                 borderSide: BorderSide.none,
               ),
               contentPadding:
@@ -107,6 +117,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
                 ),
+                enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(spaceM),
+                borderSide: BorderSide.none,
+              ),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),

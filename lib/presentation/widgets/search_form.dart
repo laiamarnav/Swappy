@@ -117,6 +117,14 @@ class SearchForm extends StatelessWidget {
                 horizontal: spaceM,
                 vertical: spaceS + spaceXS,
               ),
+              enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(spaceM),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(spaceM),
+              borderSide: BorderSide.none,
+            ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(spaceM),
                 borderSide: BorderSide.none,
@@ -151,6 +159,10 @@ class SearchForm extends StatelessWidget {
                   borderRadius: BorderRadius.circular(spaceM),
                   borderSide: BorderSide.none,
                 ),
+                enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(spaceM),
+                borderSide: BorderSide.none,
+              ),
               ),
               child: Text(value),
             ),
