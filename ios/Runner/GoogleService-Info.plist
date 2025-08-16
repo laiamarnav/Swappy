@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>474776385675-6mtkitodht8g84toaajdovo2nadj8onk.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.474776385675-6mtkitodht8g84toaajdovo2nadj8onk</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>474776385675-flhtqh87oj8vqfm936fnmv9ml8g151st.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAAQA-8xwA3_xeycDKvH2XDcgH9CMbbUSg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>474776385675</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.swivo.app</string>
+	<key>PROJECT_ID</key>
+	<string>swivo-d8bfa</string>
+	<key>STORAGE_BUCKET</key>
+	<string>swivo-d8bfa.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:474776385675:ios:281f709b9858649c2d7c8e</string>
+</dict>
+</plist>

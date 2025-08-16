@@ -12,7 +12,20 @@
           "package_name": "com.swivo.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "474776385675-flhtqh87oj8vqfm936fnmv9ml8g151st.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.swivo.app",
+            "certificate_hash": "5151e0d7fd86290da528025502193866e22ba73c"
+          }
+        },
+        {
+          "client_id": "474776385675-5cn54oolrs8i1ijd5gk4m5knnle1adb4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB76nQerj35VawN1t09-rvugXJORMNkYZk"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474776385675-5cn54oolrs8i1ijd5gk4m5knnle1adb4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "474776385675-6mtkitodht8g84toaajdovo2nadj8onk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.swivo.app"
+              }
+            }
+          ]
         }
       }
     }
