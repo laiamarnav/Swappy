@@ -1,5 +1,8 @@
 // lib/screens/published_listings_screen.dart
 
+import 'dart:developer' as developer;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../data/app_state.dart';
@@ -83,7 +86,10 @@ class PublishedListingsScreen extends StatelessWidget {
 
     final listings = [...realListings, ...demoListings];
 
-    print('⏳ Total listings to show: ${listings.length}');
+    if (kDebugMode) {
+      developer.log('⏳ Total listings to show: ${listings.length}',
+          name: 'PublishedListingsScreen');
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
