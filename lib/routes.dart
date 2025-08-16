@@ -15,9 +15,11 @@ import 'package:swappy/presentation/report_problem/report_problem_screen.dart';
 import 'package:swappy/presentation/search/search_screen.dart';
 import 'package:swappy/presentation/auth/auth_gate.dart';
 import 'package:swappy/presentation/profile/profile_screen.dart';
+import 'package:swappy/presentation/splash/splash_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (_)             => const AuthGate(),
+  '/splash': (_) => const SplashScreen(),
   '/onboarding': (_)             => const OnboardingScreen(),
   '/login':   (context) => const LoginScreen(),
   '/register':(context) => const RegisterScreen(),

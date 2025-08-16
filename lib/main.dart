@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:swappy/l10n/app_localizations.dart';
 
 import 'application/app_state_controller.dart';
 import 'firebase_options.dart';
@@ -43,8 +43,8 @@ class SwappyApp extends StatelessWidget {
       supportedLocales: const [
         Locale('en'),
         Locale('es'),
-      ],
-      home: const SplashScreen(),
+      ],   
+      initialRoute: '/splash',
       routes: appRoutes,
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:swappy/l10n/app_localizations.dart' show AppLocalizations;
 
 import '../../application/core/async_state.dart';
 import '../../application/search/search_controller.dart' as search;

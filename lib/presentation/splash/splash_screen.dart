@@ -33,20 +33,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.blue,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.flight_takeoff,
-              size: 100,
-              color: AppColors.primary,
-            ),
-            SizedBox(height: 24),
-            CircularProgressIndicator(
-              color: AppColors.primary,
-            ),
+           Image(image: AssetImage('assets/logo.png'), height: 56),
           ],
         ),
       ),
