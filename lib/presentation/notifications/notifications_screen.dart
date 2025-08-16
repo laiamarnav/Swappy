@@ -1,10 +1,11 @@
 // lib/screens/notifications_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import 'package:swappy/presentation/widgets/adaptive_scaffold.dart';
-import '../../data/app_state.dart';
+import '../../application/app_state_controller.dart';
 import '../../models/exchange_request.dart';
 import '../../models/listing.dart';
 
@@ -42,6 +43,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       Navigator.of(context).pushNamed('/create');
     }
 
+    final appState = context.watch<AppStateController>();
+    final recv = appState.getReceivedRequests();
+    final snd = appState.getSentRequests();
+    final all = [...recv, ...snd];
+
     return AdaptiveScaffold(
       currentIndex: 0,
       onSelect: onSelect,
@@ -50,61 +56,52 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: AnimatedBuilder(
-        animation: AppState.instance,
-        builder: (context, _) {
-          final recv = AppState.instance.getReceivedRequests();
-          final snd  = AppState.instance.getSentRequests();
-          final all  = [...recv, ...snd];
-
-          return Column(
-            children: [
-              // ► AppBar blanco con iconos y texto grises
-              AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
-                elevation: 0,
-                centerTitle: true,              
-                title: const Text(
-                  'Notificaciones',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w200,
-                  ),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.settings),
-                    color: Colors.grey,
-                    onPressed: () {},
-                  ),
-                  const SizedBox(width: 8),
-                ],
+      body: Column(
+        children: [
+          // ► AppBar blanco con iconos y texto grises
+          AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            centerTitle: true,
+            title: const Text(
+              'Notificaciones',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 15,
+                fontWeight: FontWeight.w200,
               ),
-
-              // ► Lista scrollable de notificaciones
-              Expanded(
-                child: Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: true,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
-                    itemCount: all.length,
-                    itemBuilder: (ctx, i) {
-                      final r = all[i];
-                      return _NotificationCard(
-                        request: r,
-                        isReceived: i < recv.length,
-                      );
-                    },
-                  ),
-                ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings),
+                color: Colors.grey,
+                onPressed: () {},
               ),
+              const SizedBox(width: 8),
             ],
-          );
-        },
+          ),
+
+          // ► Lista scrollable de notificaciones
+          Expanded(
+            child: Scrollbar(
+              controller: _scrollController,
+              thumbVisibility: true,
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+                itemCount: all.length,
+                itemBuilder: (ctx, i) {
+                  final r = all[i];
+                  return _NotificationCard(
+                    request: r,
+                    isReceived: i < recv.length,
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -134,7 +131,8 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final listing = AppState.instance.getListingById(request.listingId);
+    final listing =
+        context.watch<AppStateController>().getListingById(request.listingId);
     final dateStr = DateFormat('dd MMM yyyy').format(listing.date);
     final timeStr = DateFormat('HH:mm').format(listing.date);
 
@@ -193,10 +191,12 @@ class _NotificationCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton.icon(
-                    onPressed: () => AppState.instance.respondToRequest(
-                      request.id,
-                      ExchangeRequestStatus.rejected,
-                    ),
+                    onPressed: () => context
+                        .read<AppStateController>()
+                        .respondToRequest(
+                          request.id,
+                          ExchangeRequestStatus.rejected,
+                        ),
                     icon: const Icon(Icons.close, color: Colors.red),
                     label: const Text(
                       'Rechazar',
@@ -205,10 +205,12 @@ class _NotificationCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 48),
                   TextButton.icon(
-                    onPressed: () => AppState.instance.respondToRequest(
-                      request.id,
-                      ExchangeRequestStatus.accepted,
-                    ),
+                    onPressed: () => context
+                        .read<AppStateController>()
+                        .respondToRequest(
+                          request.id,
+                          ExchangeRequestStatus.accepted,
+                        ),
                     icon: const Icon(Icons.check, color: Colors.green),
                     label: const Text(
                       'Aceptar',
