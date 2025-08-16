@@ -1,20 +1,23 @@
-// lib/data/app_state.dart
+// lib/application/app_state_controller.dart
 
-import 'package:flutter/foundation.dart';               // ← añadido
-import '../models/listing.dart';
+import 'package:flutter/foundation.dart';
+
 import '../models/exchange_request.dart';
+import '../models/listing.dart';
 
-class AppState extends ChangeNotifier {                  // ← ahora extiende ChangeNotifier
-  // Singleton boilerplate
-  AppState._privateConstructor();
-  static final AppState instance = AppState._privateConstructor();
+/// Controller that holds demo listings, exchange requests and the current user.
+///
+/// It exposes read/write access through getters and setters and notifies
+/// listeners whenever the underlying state changes.
+class AppStateController extends ChangeNotifier {
+  String _currentUserId = 'user_1';
+  String get currentUserId => _currentUserId;
+  set currentUserId(String id) {
+    _currentUserId = id;
+    notifyListeners();
+  }
 
-  // El usuario actual
-  String currentUserId = 'user_1';
-
-  // Lista de todos los anuncios (listings)
-  final List<Listing> listings = [
-    // Publicado por el usuario actual
+  final List<Listing> _listings = [
     Listing(
       id: 'l1',
       userId: 'user_1',
@@ -26,7 +29,6 @@ class AppState extends ChangeNotifier {                  // ← ahora extiende C
       seat: '13D',
       date: DateTime(2025, 9, 30, 10, 15),
     ),
-    // Publicado por otro usuario
     Listing(
       id: 'l2',
       userId: 'user_2',
@@ -38,7 +40,6 @@ class AppState extends ChangeNotifier {                  // ← ahora extiende C
       seat: '7A',
       date: DateTime(2025, 10, 5, 8, 30),
     ),
-    // Un tercer usuario
     Listing(
       id: 'l3',
       userId: 'user_3',
@@ -52,9 +53,9 @@ class AppState extends ChangeNotifier {                  // ← ahora extiende C
     ),
   ];
 
-  // Lista interna de intercambios/peticiones
+  List<Listing> get listings => List.unmodifiable(_listings);
+
   final List<ExchangeRequest> _requests = [
-    // Solicitudes recibidas por el usuario actual
     ExchangeRequest(
       id: 'r1',
       listingId: 'l1',
@@ -69,7 +70,6 @@ class AppState extends ChangeNotifier {                  // ← ahora extiende C
       toUserId: 'user_1',
       status: ExchangeRequestStatus.pending,
     ),
-    // Solicitudes enviadas por el usuario actual
     ExchangeRequest(
       id: 'r3',
       listingId: 'l2',
@@ -86,44 +86,41 @@ class AppState extends ChangeNotifier {                  // ← ahora extiende C
     ),
   ];
 
-  /// Sólo peticiones **pendientes** recibidas
+  /// Pending requests received by the current user.
   List<ExchangeRequest> getReceivedRequests() {
     return _requests
-      .where((r) =>
-        r.toUserId == currentUserId &&
-        r.status == ExchangeRequestStatus.pending
-      )
-      .toList();
+        .where((r) =>
+            r.toUserId == _currentUserId &&
+            r.status == ExchangeRequestStatus.pending)
+        .toList();
   }
 
-  /// Sólo peticiones **pendientes** enviadas
+  /// Pending requests sent by the current user.
   List<ExchangeRequest> getSentRequests() {
     return _requests
-      .where((r) =>
-        r.fromUserId == currentUserId &&
-        r.status == ExchangeRequestStatus.pending
-      )
-      .toList();
+        .where((r) =>
+            r.fromUserId == _currentUserId &&
+            r.status == ExchangeRequestStatus.pending)
+        .toList();
   }
 
-  /// Tus otros getters originales
-  List<Listing> getMyListings() => listings
-      .where((l) => l.userId == currentUserId)
-      .toList();
+  List<Listing> getMyListings() =>
+      _listings.where((l) => l.userId == _currentUserId).toList();
 
-  Listing getListingById(String id) => listings.firstWhere(
-      (l) => l.id == id,
-      orElse: () => throw StateError('Listing con id "$id" no encontrado'),
-  );
+  Listing getListingById(String id) => _listings.firstWhere(
+        (l) => l.id == id,
+        orElse: () =>
+            throw StateError('Listing con id "$id" no encontrado'),
+      );
 
-  /// Cambia el estado de la petición y notifica
   void respondToRequest(String requestId, ExchangeRequestStatus newStatus) {
     final req = _requests.firstWhere(
       (r) => r.id == requestId,
       orElse: () =>
-        throw StateError('Request con id "$requestId" no encontrado'),
+          throw StateError('Request con id "$requestId" no encontrado'),
     );
     req.status = newStatus;
-    notifyListeners();                                // ← añadido
+    notifyListeners();
   }
 }
+

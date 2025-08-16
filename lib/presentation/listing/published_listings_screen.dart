@@ -5,7 +5,8 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../data/app_state.dart';
+import 'package:provider/provider.dart';
+import '../../application/app_state_controller.dart';
 import '../../models/listing.dart';
 
 class PublishedListingsScreen extends StatelessWidget {
@@ -13,12 +14,13 @@ class PublishedListingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final realListings = AppState.instance.getMyListings();
+    final appState = context.watch<AppStateController>();
+    final realListings = appState.getMyListings();
 
     final demoListings = <Listing>[
       Listing(
         id: 'demo1',
-        userId: AppState.instance.currentUserId,
+        userId: appState.currentUserId,
         userAvatarUrl: 'assets/avatar.png',
         origin: 'Madrid, Spain',
         destination: 'Paris, France',
@@ -29,7 +31,7 @@ class PublishedListingsScreen extends StatelessWidget {
       ),
       Listing(
         id: 'demo2',
-        userId: AppState.instance.currentUserId,
+        userId: appState.currentUserId,
         userAvatarUrl: 'assets/avatar.png',
         origin: 'Valencia, Spain',
         destination: 'London, UK',
@@ -40,7 +42,7 @@ class PublishedListingsScreen extends StatelessWidget {
       ),
       Listing(
         id: 'demo3',
-        userId: AppState.instance.currentUserId,
+        userId: appState.currentUserId,
         userAvatarUrl: 'assets/avatar.png',
         origin: 'Seville, Spain',
         destination: 'Lisbon, Portugal',
@@ -51,7 +53,7 @@ class PublishedListingsScreen extends StatelessWidget {
       ),
       Listing(
         id: 'demo4',
-        userId: AppState.instance.currentUserId,
+        userId: appState.currentUserId,
         userAvatarUrl: 'https://i.pravatar.cc/150?img=47',
         origin: 'Barcelona, Spain',
         destination: 'Rome, Italy',
@@ -62,7 +64,7 @@ class PublishedListingsScreen extends StatelessWidget {
       ),
       Listing(
         id: 'demo5',
-        userId: AppState.instance.currentUserId,
+        userId: appState.currentUserId,
         userAvatarUrl: 'assets/avatar.png',
         origin: 'Berlin, Germany',
         destination: 'Amsterdam, Netherlands',
@@ -73,7 +75,7 @@ class PublishedListingsScreen extends StatelessWidget {
       ),
       Listing(
         id: 'demo6',
-        userId: AppState.instance.currentUserId,
+        userId: appState.currentUserId,
         userAvatarUrl: 'assets/avatar.png',
         origin: 'Lisbon, Portugal',
         destination: 'Madrid, Spain',
