@@ -7,7 +7,7 @@ import '../../constants/dates.dart';
 import '../../domain/entities/search_result.dart';
 import '../../infrastructure/di/locator.dart';
 import '../../infrastructure/auth/auth_service.dart';
-import '../../screens/auth_gate.dart';
+import '../auth/auth_gate.dart';
 import '../widgets/destination_carousel.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/search_form.dart';

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../infrastructure/di/locator.dart';
-import '../infrastructure/auth/auth_service.dart';
+import '../../infrastructure/di/locator.dart';
+import '../../infrastructure/auth/auth_service.dart';
 
-import '../constants/app_colors.dart';
-import '../transitions.dart'; // Custom transitions
-import 'onboarding_screen.dart'; // Navigate after register
+import '../../constants/app_colors.dart';
+import '../../transitions.dart'; // Custom transitions
+import '../onboarding/onboarding_screen.dart'; // Navigate after register
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);

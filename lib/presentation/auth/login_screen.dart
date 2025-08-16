@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../infrastructure/di/locator.dart';
-import '../infrastructure/auth/auth_service.dart';
+import '../../infrastructure/di/locator.dart';
+import '../../infrastructure/auth/auth_service.dart';
 
-import '../constants/app_colors.dart';
-import '../presentation/widgets/tap_scale.dart';
-import '../transitions.dart'; // Custom transitions
+import '../../constants/app_colors.dart';
+import '../widgets/tap_scale.dart';
+import '../../transitions.dart'; // Custom transitions
 import 'auth_gate.dart';
 
 class LoginScreen extends StatefulWidget {
