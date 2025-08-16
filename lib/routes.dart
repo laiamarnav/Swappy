@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:swappy/screens/about_app_screen.dart';
-import 'package:swappy/screens/create_listing_screen.dart';
-import 'package:swappy/screens/edit_profile_screen.dart';
-import 'package:swappy/screens/login_screen.dart';
-import 'package:swappy/screens/notifications_screen.dart';
-import 'package:swappy/screens/notifications_settings_screen.dart';
-import 'package:swappy/screens/onboarding_screen.dart';
-import 'package:swappy/screens/published_listings_screen.dart';
-import 'package:swappy/screens/register_screen.dart';
-import 'package:swappy/screens/report_problem_screen.dart';
+import 'package:swappy/presentation/about/about_app_screen.dart';
+import 'package:swappy/presentation/listing/create_listing_screen.dart';
+import 'package:swappy/presentation/profile/edit_profile_screen.dart';
+import 'package:swappy/presentation/auth/login_screen.dart';
+import 'package:swappy/presentation/notifications/notifications_screen.dart';
+import 'package:swappy/presentation/notifications/notifications_settings_screen.dart';
+import 'package:swappy/presentation/onboarding/onboarding_screen.dart';
+import 'package:swappy/presentation/listing/published_listings_screen.dart';
+import 'package:swappy/presentation/auth/register_screen.dart';
+import 'package:swappy/presentation/report_problem/report_problem_screen.dart';
 import 'package:swappy/presentation/search/search_screen.dart';
-import 'package:swappy/screens/auth_gate.dart';
-import 'package:swappy/screens/profile_screen.dart';
+import 'package:swappy/presentation/auth/auth_gate.dart';
+import 'package:swappy/presentation/profile/profile_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (_)             => const AuthGate(),

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:swappy/presentation/widgets/adaptive_scaffold.dart';
-import '../data/app_state.dart';
-import '../models/exchange_request.dart';
-import '../models/listing.dart';
+import '../../data/app_state.dart';
+import '../../models/exchange_request.dart';
+import '../../models/listing.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);

@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../data/app_state.dart';
-import '../models/listing.dart';
+import '../../data/app_state.dart';
+import '../../models/listing.dart';
 
 class PublishedListingsScreen extends StatelessWidget {
   const PublishedListingsScreen({Key? key}) : super(key: key);

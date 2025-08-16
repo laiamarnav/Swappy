@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:swappy/screens/profile_screen.dart';
+import 'package:swappy/presentation/profile/profile_screen.dart';
 
 Future<void> _pump(WidgetTester tester, double width) async {
   await tester.binding.setSurfaceSize(Size(width, 800));
