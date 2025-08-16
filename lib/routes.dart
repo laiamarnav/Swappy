@@ -23,7 +23,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/register':(context) => const RegisterScreen(),
   '/notifications': (_) => const NotificationsScreen(),
   '/search': (_) => ChangeNotifierProvider(
-        create: (_) => search.SearchController(locator()),
+        create: (_) => locator<search.SearchController>(),
         child: const SearchScreen(),
       ),
   '/profile': (_)       => const ProfileScreen(),
