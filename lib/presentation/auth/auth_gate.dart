@@ -24,7 +24,7 @@ class AuthGate extends StatelessWidget {
         }
         if (snapshot.hasData) {
           return ChangeNotifierProvider(
-            create: (_) => search.SearchController(locator()),
+            create: (_) => locator<search.SearchController>(),
             child: const SearchScreen(),
           );
         }

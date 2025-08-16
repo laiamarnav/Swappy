@@ -1,0 +1,8 @@
+{
+  "@@locale": "es",
+  "appTitle": "Swappy",
+  "somethingWentWrong": "Algo salió mal",
+  "retry": "Reintentar",
+  "noResultsFound": "No se encontraron resultados",
+  "tryDifferentSearch": "Prueba una búsqueda diferente"
+}
