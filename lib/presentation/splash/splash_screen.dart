@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../application/search/search_controller.dart' as search;
-import '../../constants/app_colors.dart';
-import '../../infrastructure/di/locator.dart';
-import '../search/search_screen.dart';
+import '../auth/auth_gate.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,15 +12,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChangeNotifierProvider(
-            create: (_) => locator<search.SearchController>(),
-            child: const SearchScreen(),
-          ),
-        ),
+    Future.delayed(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const AuthGate()),
       );
     });
   }
@@ -35,14 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
     return const Scaffold(
       backgroundColor: Colors.blue,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-           Image(image: AssetImage('assets/logo.png'), height: 56),
-          ],
-        ),
+        child: Image(image: AssetImage('assets/logo.png'), height: 56),
       ),
     );
   }
 }
-
