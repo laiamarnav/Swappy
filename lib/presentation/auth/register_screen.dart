@@ -5,6 +5,7 @@ import '../../infrastructure/auth/auth_service.dart';
 import '../../constants/app_colors.dart';
 import '../../transitions.dart'; // Custom transitions
 import '../onboarding/onboarding_screen.dart'; // Navigate after register
+import 'auth_gate.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -75,6 +76,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } catch (e, st) {
       debugPrint('REGISTER UNEXPECTED ERROR => $e\n$st');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ha ocurrido un error inesperado')),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _loading = true);
+    final auth = locator<AuthService>();
+    try {
+      await auth.signInWithGoogle();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sesión iniciada')),
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        FadePageRoute(page: const AuthGate()),
+        (_) => false,
+      );
+    } on AuthException catch (e) {
+      debugPrint('GOOGLE SIGNIN ERROR => ${e.code}: ${e.message}');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${e.message} (${e.code})')),
+      );
+    } catch (e, st) {
+      debugPrint('GOOGLE SIGNIN UNEXPECTED ERROR => $e\n$st');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Ha ocurrido un error inesperado')),
@@ -237,6 +268,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 16),
                                 ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: FilledButton.icon(
+                          onPressed: _loading ? null : _signInWithGoogle,
+                          icon: const Icon(Icons.g_mobiledata),
+                          label: const Text('Continue with Google'),
                         ),
                       ),
                     ],
