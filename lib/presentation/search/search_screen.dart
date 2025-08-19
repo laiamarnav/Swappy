@@ -9,7 +9,6 @@ import '../../constants/dates.dart';
 import '../../domain/entities/search_result.dart';
 import '../../infrastructure/di/locator.dart';
 import '../../infrastructure/auth/auth_service.dart';
-import '../auth/auth_gate.dart';
 import '../widgets/destination_carousel.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/search_form.dart';
@@ -131,13 +130,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {
-                    locator<AuthService>().signOut();
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (_) => const AuthGate()),
-                      (_) => false,
-                    );
-                  },
+                  onPressed: () => locator<AuthService>().signOut(),
                   icon: Icon(
                     Icons.logout,
                     color: Theme.of(context).colorScheme.onBackground,

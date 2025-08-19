@@ -63,6 +63,36 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    setState(() => _loading = true);
+    final auth = locator<AuthService>();
+    try {
+      await auth.signInWithGoogle();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sesión iniciada')),
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        FadePageRoute(page: const AuthGate()),
+        (_) => false,
+      );
+    } on AuthException catch (e) {
+      debugPrint('GOOGLE SIGNIN ERROR => ${e.code}: ${e.message}');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${e.message} (${e.code})')),
+      );
+    } catch (e, st) {
+      debugPrint('GOOGLE SIGNIN UNEXPECTED ERROR => $e\n$st');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ha ocurrido un error inesperado')),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   void _forgotPassword() {
     showDialog(
       context: context,
@@ -206,6 +236,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                         color: Colors.white, fontSize: 16),
                                   ),
                           ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: FilledButton.icon(
+                          onPressed: _loading ? null : _signInWithGoogle,
+                          icon: const Icon(Icons.g_mobiledata),
+                          label: const Text('Continue with Google'),
                         ),
                       ),
                       const SizedBox(height: 8),
