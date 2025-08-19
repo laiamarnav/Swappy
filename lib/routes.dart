@@ -4,6 +4,9 @@ import 'package:swappy/screens/notifications_screen.dart';
 import 'package:swappy/screens/search_screen.dart';
 import 'package:swappy/screens/splash_screen.dart';
 import 'package:swappy/screens/profile_screen.dart';
+import 'package:swappy/presentation/auth/login_screen.dart';
+import 'package:swappy/presentation/auth/register_screen.dart';
+import 'package:swappy/presentation/auth/verify_email_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (_)             => const SplashScreen(),
@@ -11,4 +14,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/search': (_)        => const SearchScreen(),
   '/profile': (_)       => const ProfileScreen(),
   '/create': (_)        => const CreateListingScreen(),
+  '/login': (_)         => const LoginScreen(),
+  '/register': (_)      => const RegisterScreen(),
+  '/verify-email': (_)  => const VerifyEmailScreen(),
 };

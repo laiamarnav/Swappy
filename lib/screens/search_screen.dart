@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../infrastructure/di/locator.dart';
+import '../infrastructure/auth/auth_service.dart';
 import '../widgets/main_scaffold.dart';
 import '../widgets/search_form.dart';
 import '../widgets/search_summary.dart';
@@ -88,11 +91,36 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final name = user?.displayName ?? 'User';
+    final photo = user?.photoURL;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return MainScaffold(
       currentIndex: 1,
       child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundImage: (photo != null) ? NetworkImage(photo) : null,
+                child: (photo == null) ? Text(name.isNotEmpty ? name[0] : '?') : null,
+              ),
+              const SizedBox(width: 8),
+              Text(name),
+            ],
+          ),
+          actions: [
+            IconButton(
+              tooltip: 'Cerrar sesión',
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                await locator<AuthService>().signOut();
+              },
+            ),
+          ],
+        ),
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
           heroTag: "search",
