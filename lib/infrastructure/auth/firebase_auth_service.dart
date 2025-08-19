@@ -70,6 +70,21 @@ class FirebaseAuthService implements AuthService {
     ]);
   }
 
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      // Usa tu mapeo si lo tienes; aquí lanzamos un AuthException simple
+      throw AuthException(
+        e.message ?? 'Error al enviar el correo de recuperación',
+        code: e.code,
+      );
+    } catch (_) {
+      throw AuthException('Ha ocurrido un error inesperado', code: 'unknown');
+    }
+  }
+
   String _mapError(String code) {
     switch (code) {
       case 'email-already-in-use':

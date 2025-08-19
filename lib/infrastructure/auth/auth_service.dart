@@ -17,6 +17,9 @@ abstract class AuthService {
   // Google
   Future<UserCredential> signInWithGoogle();
 
+  // 🔹 Restablecer contraseña (NUEVO)
+  Future<void> sendPasswordResetEmail(String email);
+
   // Cerrar sesión (completa)
   Future<void> signOut();
 }
@@ -73,7 +76,6 @@ class FirebaseAuthService implements AuthService {
       final provider = GoogleAuthProvider();
       provider.setCustomParameters({'prompt': 'select_account'});
       return _wrapFirebase(() => _auth.signInWithPopup(provider));
-      // Alternativa: await _auth.signInWithRedirect(provider);
     } else {
       // ANDROID / iOS: flujo nativo con google_sign_in
       final googleUser = await _google.signIn();
@@ -87,6 +89,12 @@ class FirebaseAuthService implements AuthService {
       );
       return _wrapFirebase(() => _auth.signInWithCredential(credential));
     }
+  }
+
+  // 🔹 Restablecer contraseña (NUEVO)
+  @override
+  Future<void> sendPasswordResetEmail(String email) {
+    return _wrapFirebase(() => _auth.sendPasswordResetEmail(email: email.trim()));
   }
 
   @override

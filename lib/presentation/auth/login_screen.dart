@@ -1,3 +1,4 @@
+// lib/presentation/auth/login_screen.dart
 import 'package:flutter/material.dart';
 import '../../infrastructure/di/locator.dart';
 import '../../infrastructure/auth/auth_service.dart';
@@ -93,23 +94,56 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _forgotPassword() {
-    showDialog(
+  // 🔁 Reemplazado: ahora pide email y envía el correo real de recuperación
+  Future<void> _forgotPassword() async {
+    final auth = locator<AuthService>();
+    final ctrl = TextEditingController(text: _email.text.trim());
+
+    final email = await showDialog<String?>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('¿Olvidaste tu contraseña?'),
-        content: const Text(
-          'En una app real enviaríamos un correo de recuperación.\n'
-          'Esto es un placeholder 🙂',
+        title: const Text('Restablecer contraseña'),
+        content: TextField(
+          controller: ctrl,
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            hintText: 'you@example.com',
+          ),
+          keyboardType: TextInputType.emailAddress,
+          autofocus: true,
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Entendido'),
+            onPressed: () => Navigator.pop(ctx, null),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: const Text('Enviar'),
           ),
         ],
       ),
     );
+
+    if (email == null || email.isEmpty) return;
+
+    try {
+      await auth.sendPasswordResetEmail(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Te enviamos un email de recuperación a $email')),
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${e.message} (${e.code})')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
   @override
@@ -204,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: _forgotPassword,
+                          onPressed: _loading ? null : _forgotPassword, // <- deshabilita si está cargando
                           child: const Text('¿Olvidaste tu contraseña?'),
                         ),
                       ),
