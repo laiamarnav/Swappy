@@ -1,7 +1,8 @@
-// lib/screens/create_listing_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:swappy/domain/seats/seat.dart' show Seat;
+import 'package:swappy/infrastructure/seats/seat_service.dart';
 import 'package:swappy/ui/spacing.dart';
 
 class CreateListingScreen extends StatefulWidget {
@@ -20,6 +21,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   final seatController       = TextEditingController();
   DateTime? selectedDateTime;
 
+  final seatService = SeatService();
+
   Future<void> _pickDateTime() async {
     final date = await showDatePicker(
       context: context,
@@ -35,17 +38,44 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     if (time == null) return;
     setState(() {
       selectedDateTime = DateTime(
-        date.year, date.month, date.day, time.hour, time.minute
+        date.year, date.month, date.day, time.hour, time.minute,
       );
     });
   }
 
-  void _submitListing() {
+  Future<void> _submitListing() async {
     if (_formKey.currentState!.validate() && selectedDateTime != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Asiento publicado exitosamente')),
-      );
-      Navigator.of(context).pop();
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('⚠️ Debes iniciar sesión primero')),
+          );
+          return;
+        }
+
+        final seat = Seat(
+          airline: airlineController.text,
+          flightCode: flightCodeController.text,
+          origin: fromController.text,
+          destination: toController.text,
+          dateTime: selectedDateTime!,
+          seatNumber: seatController.text,
+          userId: user.uid,
+        );
+
+        await seatService.publishSeat(seat);
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('✅ Asiento publicado exitosamente')),
+        );
+        Navigator.of(context).pop();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Error: $e')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
@@ -72,25 +102,23 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         Expanded(
           child: TextFormField(
             controller: c,
-            
             decoration: InputDecoration(
               labelText: label,
               filled: true,
               fillColor: Colors.grey[100],
               enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(spaceM),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(spaceM),
-              borderSide: BorderSide.none,
-            ),
+                borderRadius: BorderRadius.circular(spaceM),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(spaceM),
+                borderSide: BorderSide.none,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(spaceM),
                 borderSide: BorderSide.none,
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             validator: (v) => v == null || v.isEmpty ? 'Required' : null,
           ),
@@ -99,8 +127,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     );
   }
 
-  Widget _dateTimeTile(
-      String label, IconData icon, String value, VoidCallback onTap) {
+  Widget _dateTimeTile(String label, IconData icon, String value, VoidCallback onTap) {
     return Row(
       children: [
         _iconBox(icon),
@@ -118,11 +145,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(spaceM),
-                borderSide: BorderSide.none,
-              ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  borderRadius: BorderRadius.circular(spaceM),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               child: Text(value),
             ),
@@ -137,9 +163,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      // AppBar blanco con iconos y texto grises
       appBar: AppBar(
-        
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -154,8 +178,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         child: Card(
           color: Colors.white,
           elevation: 8,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Form(
@@ -163,31 +186,27 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Sección: Detalles del vuelo
+                  // Detalles del vuelo
                   const Text('Detalles del vuelo',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   _inputTile('Aerolínea', Icons.flight, airlineController),
                   const SizedBox(height: 12),
-                  _inputTile('Código de vuelo', Icons.confirmation_number,
-                      flightCodeController),
+                  _inputTile('Código de vuelo', Icons.confirmation_number, flightCodeController),
 
                   const SizedBox(height: 24),
-                  // Sección: Ruta
+                  // Ruta
                   const Text('Ruta',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   _inputTile('Origen', Icons.location_on, fromController),
                   const SizedBox(height: 12),
                   _inputTile('Destino', Icons.location_city, toController),
 
                   const SizedBox(height: 24),
-                  // Sección: Horario
+                  // Horario
                   const Text('Horario',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -196,8 +215,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                           'Fecha',
                           Icons.calendar_today,
                           selectedDateTime != null
-                              ? DateFormat('dd/MM/yyyy')
-                                  .format(selectedDateTime!)
+                              ? DateFormat('dd/MM/yyyy').format(selectedDateTime!)
                               : 'Seleccionar fecha',
                           _pickDateTime,
                         ),
@@ -208,8 +226,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                           'Hora',
                           Icons.access_time,
                           selectedDateTime != null
-                              ? DateFormat('HH:mm')
-                                  .format(selectedDateTime!)
+                              ? DateFormat('HH:mm').format(selectedDateTime!)
                               : '--:--',
                           _pickDateTime,
                         ),
@@ -218,15 +235,14 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   ),
 
                   const SizedBox(height: 24),
-                  // Sección: Asiento
+                  // Asiento
                   const Text('Asiento',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   _inputTile('Asiento', Icons.event_seat, seatController),
 
                   const SizedBox(height: 32),
-                  // Botón de envío
+                  // Botón enviar
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
