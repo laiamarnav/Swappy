@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:swappy/application/seats/search_seat_controller.dart' show SearchSeatController;
 import 'package:swappy/l10n/app_localizations.dart' show AppLocalizations;
 
-import '../../application/core/async_state.dart';
-import '../../application/search/search_controller.dart' as search;
 import '../../constants/app_colors.dart';
 import '../../constants/dates.dart';
-import '../../domain/entities/search_result.dart';
 import '../../infrastructure/di/locator.dart';
 import '../../infrastructure/auth/auth_service.dart';
+import '../../ui/spacing.dart';
+import '../../ui/max_width.dart';
+import '../../ui/states/loading_state.dart';
+import '../../ui/states/empty_state.dart';
+
 import '../widgets/destination_carousel.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/search_form.dart';
 import '../widgets/search_summary.dart';
 import '../widgets/seat_request_dialog.dart';
 import '../../widgets/search_results_list.dart';
-import '../../ui/spacing.dart';
-import '../../ui/max_width.dart';
-import '../../ui/states/loading_state.dart';
-import '../../ui/states/empty_state.dart';
+
+import '../../domain/seats/seat.dart';
+import '../../infrastructure/seats/seat_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -31,14 +33,27 @@ class _SearchScreenState extends State<SearchScreen> {
   final _formKey = GlobalKey<FormState>();
   final fromController = TextEditingController();
   final toController = TextEditingController();
-  final seatController = TextEditingController();
+  final flightCodeController = TextEditingController();
   DateTime? selectedDateTime;
+
+  Stream<List<Seat>>? searchResults;
+  bool hasSearched = false;
+  bool isLoading = false;
+  String? error;
+
+  late final SearchSeatController searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController = SearchSeatController(SeatService());
+  }
 
   @override
   void dispose() {
     fromController.dispose();
     toController.dispose();
-    seatController.dispose();
+    flightCodeController.dispose();
     super.dispose();
   }
 
@@ -72,12 +87,20 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _submitSearch() {
     if (_formKey.currentState!.validate() && selectedDateTime != null) {
-      context.read<search.SearchController>().search(
-            from: fromController.text,
-            to: toController.text,
-            seat: seatController.text,
-            dateTime: selectedDateTime!,
-          );
+      setState(() {
+        isLoading = true;
+        error = null;
+        hasSearched = true;
+        searchResults = searchController.searchSeats(
+          origin: fromController.text,
+          destination: toController.text,
+          date: selectedDateTime!,
+          flightCode: flightCodeController.text.isNotEmpty
+              ? flightCodeController.text
+              : null,
+        );
+      });
+      setState(() => isLoading = false);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
@@ -96,28 +119,23 @@ class _SearchScreenState extends State<SearchScreen> {
       Navigator.pushReplacementNamed(context, _routes[i]);
     }
 
-    return Consumer<search.SearchController>(
-      builder: (context, controller, _) {
-        final state = controller.state;
-        final hasSearched = state.status == AsyncStatus.success;
-
-        return AdaptiveScaffold(
-          currentIndex: 1,
-          onSelect: onSelect,
-          fab: FloatingActionButton(
-            heroTag: 'search',
-            onPressed: _navigateCreate,
-            tooltip: 'Create listing',
-            backgroundColor: AppColors.primary,
-            child: Icon(
-              Icons.add,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-          ),
-          body: MaxWidth(
-            child: Column(
-              children: [
-                AppBar(
+    return AdaptiveScaffold(
+      currentIndex: 1,
+      onSelect: onSelect,
+      fab: FloatingActionButton(
+        heroTag: 'search',
+        onPressed: _navigateCreate,
+        tooltip: 'Create listing',
+        backgroundColor: AppColors.primary,
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
+      ),
+      body: MaxWidth(
+        child: Column(
+          children: [
+            AppBar(
               backgroundColor: Theme.of(context).colorScheme.background,
               elevation: 0,
               centerTitle: true,
@@ -139,7 +157,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ],
             ),
-            if (state.status == AsyncStatus.idle)
+
+            // 🔹 Hero Section
+            if (!hasSearched)
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -152,11 +172,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     color: Theme.of(context).colorScheme.background,
                     child: Text(
                       "Where's your\nnext destination",
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(
-                            color: AppColors.primary,
-                            height: 1.1,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: AppColors.primary,
+                                height: 1.1,
+                              ),
                     ),
                   ),
                   Positioned(
@@ -176,6 +196,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
+
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 spaceL,
@@ -188,28 +209,33 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Text(
                   'Search your next trip',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurfaceVariant,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
               ),
             ),
+
             if (hasSearched)
               SearchSummary(
                 from: fromController.text,
                 to: toController.text,
-                seat: seatController.text,
+                flightCode: flightCodeController.text,
                 dateTime: selectedDateTime,
-                onEdit: controller.reset,
+                onEdit: () {
+                  setState(() {
+                    hasSearched = false;
+                    searchResults = null;
+                  });
+                },
               ),
+
             Expanded(
               child: Builder(
                 builder: (context) {
-                  if (state.status == AsyncStatus.loading) {
+                  if (isLoading) {
                     return const LoadingState();
                   }
-                  if (state.status == AsyncStatus.error) {
+                  if (error != null) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -225,21 +251,39 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     );
                   }
-                  if (state.status == AsyncStatus.success) {
+
+                  if (searchResults != null) {
                     return SafeArea(
                       top: false,
-                      child: Selector<search.SearchController, List<SearchResult>>(
-                        selector: (_, c) => c.state.data ?? <SearchResult>[],
-                        builder: (context, results, _) {
+                      child: StreamBuilder<List<Seat>>(
+                        stream: searchResults,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const LoadingState();
+                          }
+                          if (snapshot.hasError) {
+                            return EmptyState(
+                              icon: Icons.error,
+                              title:
+                                  AppLocalizations.of(context)!.somethingWentWrong,
+                              subtitle:
+                                  AppLocalizations.of(context)!.tryDifferentSearch,
+                            );
+                          }
+
+                          final results = snapshot.data ?? [];
                           if (results.isEmpty) {
                             return EmptyState(
                               icon: Icons.search_off,
                               title:
                                   AppLocalizations.of(context)!.noResultsFound,
-                              subtitle: AppLocalizations.of(context)!
-                                  .tryDifferentSearch,
+                              subtitle:
+                                  AppLocalizations.of(context)!.tryDifferentSearch,
                             );
                           }
+
+                          // 🔹 Usamos SearchResultsList con SeatMapper
                           return ListView(
                             padding: EdgeInsets.only(
                               left: spaceM,
@@ -249,15 +293,15 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                             children: [
                               SearchResultsList(
-                                results: results,
-                                onRequestSeat: (r) =>
-                                    showSeatRequestDialog(context, {
+                                results: results.map((r) => r.toSearchResult()).toList(),
+                                onRequestSeat: (r) => showSeatRequestDialog(context, {
                                   'airline': r.airline,
                                   'from': r.from,
                                   'to': r.to,
-                                  'seat': r.seat,
+                                  'flightCode': r.flightCode ?? '',
                                   'date': Dates.ymd(r.dateTime),
                                   'time': Dates.time.format(r.dateTime),
+                                  'seatNumber': r.seat,
                                 }),
                               ),
                             ],
@@ -266,6 +310,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     );
                   }
+
+                  // 🔹 Initial UI (form + carousel)
                   return LayoutBuilder(
                     builder: (context, constraints) {
                       final isWide = constraints.maxWidth >= 600;
@@ -286,7 +332,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       formKey: _formKey,
                                       fromController: fromController,
                                       toController: toController,
-                                      seatController: seatController,
+                                      flightCodeController: flightCodeController,
                                       selectedDateTime: selectedDateTime,
                                       onPickDateTime: _pickDateTime,
                                       onSubmit: _submitSearch,
@@ -316,7 +362,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               formKey: _formKey,
                               fromController: fromController,
                               toController: toController,
-                              seatController: seatController,
+                              flightCodeController: flightCodeController,
                               selectedDateTime: selectedDateTime,
                               onPickDateTime: _pickDateTime,
                               onSubmit: _submitSearch,
@@ -330,15 +376,13 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       );
                     },
-                    );
-                  },
-                ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-      },
+      ),
     );
   }
 }

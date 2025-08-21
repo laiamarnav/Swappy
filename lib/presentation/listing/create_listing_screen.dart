@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // 🔹 Import Firestore
 import 'package:swappy/domain/seats/seat.dart' show Seat;
 import 'package:swappy/infrastructure/seats/seat_service.dart';
 import 'package:swappy/ui/spacing.dart';
@@ -54,14 +55,27 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           return;
         }
 
+        // 🔹 Leer nombre desde Firestore
+        final userDoc = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user.uid)
+            .get();
+
+        final ownerName = userDoc.data()?["name"] ??
+            user.displayName ??
+            user.email ??
+            "Anónimo";
+
         final seat = Seat(
+          id: '', // lo genera Firestore
           airline: airlineController.text,
           flightCode: flightCodeController.text,
           origin: fromController.text,
           destination: toController.text,
           dateTime: selectedDateTime!,
           seatNumber: seatController.text,
-          userId: user.uid,
+          ownerId: user.uid,
+          ownerName: ownerName, // 🔹 Ahora viene de Firestore
         );
 
         await seatService.publishSeat(seat);

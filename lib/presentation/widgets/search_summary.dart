@@ -6,7 +6,7 @@ import '../../constants/dates.dart';
 class SearchSummary extends StatelessWidget {
   final String from;
   final String to;
-  final String seat;
+  final String flightCode;
   final DateTime? dateTime;
   final VoidCallback onEdit;
 
@@ -14,7 +14,7 @@ class SearchSummary extends StatelessWidget {
     super.key,
     required this.from,
     required this.to,
-    required this.seat,
+    required this.flightCode,
     required this.dateTime,
     required this.onEdit,
   });
@@ -54,7 +54,7 @@ class SearchSummary extends StatelessWidget {
                       _flatSummaryItem(
                           Icons.access_time, Dates.time.format(dateTime!)),
                     _flatSummaryItem(
-                        Icons.airline_seat_recline_normal, "Seat: $seat"),
+                        Icons.airline_seat_recline_normal, "Seat: $flightCode"),
                   ],
                 ),
               ),

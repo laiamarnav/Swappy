@@ -4,6 +4,7 @@ class SearchResult {
   final String to;
   final String seat;
   final DateTime dateTime;
+  final String? flightCode; 
 
   SearchResult({
     required this.airline,
@@ -11,5 +12,6 @@ class SearchResult {
     required this.to,
     required this.seat,
     required this.dateTime,
+    this.flightCode
   });
 }

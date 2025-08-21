@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'auth_service.dart';
 
@@ -31,11 +32,14 @@ class FirebaseAuthService implements AuthService {
   }
 
   @override
-  Future<UserCredential> signUpWithEmail(String email, String password) {
-    return _wrapFirebase(() => _auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        ));
+  Future<UserCredential> signUpWithEmail(String email, String password) async {
+    final cred = await _wrapFirebase(() =>
+        _auth.createUserWithEmailAndPassword(email: email, password: password));
+
+    // Guardar en Firestore
+    await _saveUserToFirestore(cred.user!);
+
+    return cred;
   }
 
   // ---- Google ----
@@ -44,25 +48,36 @@ class FirebaseAuthService implements AuthService {
     if (kIsWeb) {
       final provider = GoogleAuthProvider();
       provider.setCustomParameters({'prompt': 'select_account'});
-      return _wrapFirebase(() => _auth.signInWithPopup(provider));
+      final cred = await _wrapFirebase(() => _auth.signInWithPopup(provider));
+
+      // Guardar usuario en Firestore
+      await _saveUserToFirestore(cred.user!);
+      return cred;
     } else {
       final googleUser = await _google.signIn();
       if (googleUser == null) {
-        throw AuthException('Inicio de sesión cancelado por el usuario', code: 'aborted');
+        throw AuthException('Inicio de sesión cancelado por el usuario',
+            code: 'aborted');
       }
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      return _wrapFirebase(() => _auth.signInWithCredential(credential));
+      final cred =
+          await _wrapFirebase(() => _auth.signInWithCredential(credential));
+
+      // Guardar usuario en Firestore
+      await _saveUserToFirestore(cred.user!);
+      return cred;
     }
   }
 
   // ---- Password reset ----
   @override
   Future<void> sendPasswordResetEmail(String email) {
-    return _wrapFirebase(() => _auth.sendPasswordResetEmail(email: email.trim()));
+    return _wrapFirebase(() =>
+        _auth.sendPasswordResetEmail(email: email.trim()));
   }
 
   // ---- Sign out (complete) ----
@@ -70,8 +85,12 @@ class FirebaseAuthService implements AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
     if (!kIsWeb) {
-      try { await _google.signOut(); } catch (_) {}
-      try { await _google.disconnect(); } catch (_) {}
+      try {
+        await _google.signOut();
+      } catch (_) {}
+      try {
+        await _google.disconnect();
+      } catch (_) {}
     }
   }
 
@@ -111,5 +130,19 @@ class FirebaseAuthService implements AuthService {
       default:
         return 'Ha ocurrido un error inesperado';
     }
+  }
+
+  // ---- Save user to Firestore ----
+  Future<void> _saveUserToFirestore(User user, {String? name}) async {
+    final userDoc =
+        FirebaseFirestore.instance.collection("users").doc(user.uid);
+
+    await userDoc.set({
+      "id": user.uid,
+      "name": name ?? user.displayName ?? "Usuario desconocido",
+      "email": user.email,
+      "photoUrl": user.photoURL,
+      "createdAt": FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true)); // merge = no machaca si ya existía
   }
 }

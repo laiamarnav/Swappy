@@ -9,7 +9,7 @@ class SearchForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController fromController;
   final TextEditingController toController;
-  final TextEditingController seatController;
+  final TextEditingController flightCodeController; // 👈 antes seatController
   final DateTime? selectedDateTime;
   final VoidCallback onPickDateTime;
   final VoidCallback onSubmit;
@@ -19,7 +19,7 @@ class SearchForm extends StatelessWidget {
     required this.formKey,
     required this.fromController,
     required this.toController,
-    required this.seatController,
+    required this.flightCodeController,
     required this.selectedDateTime,
     required this.onPickDateTime,
     required this.onSubmit,
@@ -66,7 +66,7 @@ class SearchForm extends StatelessWidget {
                   Expanded(
                     child: _dateTimeTile(
                       Icons.access_time,
-                      "Hora",
+                      "Time",
                       selectedDateTime != null
                           ? Dates.time.format(selectedDateTime!)
                           : '--:--',
@@ -76,9 +76,9 @@ class SearchForm extends StatelessWidget {
               ),
               const SizedBox(height: spaceM),
               _inputTile(
-                Icons.airline_seat_recline_normal,
-                "Seat",
-                seatController,
+                Icons.confirmation_number, // 👈 icono más lógico
+                "Flight code (optional)",   // 👈 label cambiado
+                flightCodeController,
               ),
               const SizedBox(height: spaceL),
               SizedBox(
@@ -118,13 +118,13 @@ class SearchForm extends StatelessWidget {
                 vertical: spaceS + spaceXS,
               ),
               enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(spaceM),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(spaceM),
-              borderSide: BorderSide.none,
-            ),
+                borderRadius: BorderRadius.circular(spaceM),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(spaceM),
+                borderSide: BorderSide.none,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(spaceM),
                 borderSide: BorderSide.none,
@@ -160,9 +160,9 @@ class SearchForm extends StatelessWidget {
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(spaceM),
-                borderSide: BorderSide.none,
-              ),
+                  borderRadius: BorderRadius.circular(spaceM),
+                  borderSide: BorderSide.none,
+                ),
               ),
               child: Text(value),
             ),

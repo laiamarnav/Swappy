@@ -21,13 +21,15 @@ class PublishSeatController {
     }
 
     final seat = Seat(
+      id: '', // se asignará desde Firestore
       airline: airline,
       flightCode: flightCode,
       origin: origin,
       destination: destination,
       dateTime: dateTime,
       seatNumber: seatNumber,
-      userId: user.uid,
+      ownerId: user.uid,
+      ownerName: user.displayName ?? user.email ?? 'Anónimo',
     );
 
     return await _seatService.publishSeat(seat);
